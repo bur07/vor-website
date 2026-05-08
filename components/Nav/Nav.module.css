@@ -42,6 +42,8 @@
 }
 .link:hover{color:var(--blue-royal)}
 .link:hover::after{width:100%}
+.linkActive{color:var(--blue-royal)}
+.linkActive::after{width:100%}
 
 .cta{
   font-size:0.63rem;font-weight:400;

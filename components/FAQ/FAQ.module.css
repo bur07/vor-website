@@ -1,0 +1,54 @@
+.faq{background:var(--cream-warm);padding:8rem 5rem}
+
+.inner{max-width:860px;margin:0 auto}
+
+.header{margin-bottom:3.5rem}
+
+.sectionLabel{
+  font-size:0.58rem;font-weight:400;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--blue-royal);margin-bottom:0.9rem;display:flex;align-items:center;gap:0.8rem;
+}
+.sectionLabel::before{content:'';display:block;width:22px;height:0.5px;background:var(--blue-royal)}
+.title{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:clamp(2.4rem,4.5vw,4rem);font-weight:300;line-height:1.12;color:var(--blue-deep);
+}
+.title em{font-style:italic;color:var(--blue-royal)}
+.divider{width:44px;height:0.5px;background:var(--blue-mid);margin:2rem 0}
+
+.list{display:flex;flex-direction:column}
+
+.item{border-bottom:0.5px solid var(--border)}
+.item:first-child{border-top:0.5px solid var(--border)}
+
+.question{
+  width:100%;display:flex;justify-content:space-between;align-items:center;
+  gap:2rem;padding:1.5rem 0;
+  background:none;border:none;cursor:pointer;text-align:left;
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:1.15rem;font-weight:400;color:var(--blue-deep);
+  transition:color 0.2s;
+}
+.question:hover{color:var(--blue-royal)}
+
+.chevron{
+  font-size:1.3rem;font-weight:300;color:var(--blue-royal);
+  flex-shrink:0;line-height:1;
+  transition:transform 0.3s;
+}
+
+.answer{
+  max-height:0;overflow:hidden;
+  transition:max-height 0.4s cubic-bezier(.22,1,.36,1);
+}
+.itemOpen .answer{max-height:200px}
+
+.answer p{
+  font-size:0.85rem;line-height:2;color:var(--text-body);
+  padding-bottom:1.5rem;
+}
+
+@media(max-width:900px){
+  .faq{padding:5rem 1.5rem}
+  .question{font-size:1rem}
+}

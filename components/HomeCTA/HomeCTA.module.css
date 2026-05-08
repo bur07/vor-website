@@ -1,0 +1,71 @@
+.cta{
+  background:var(--blue-deep);
+  padding:8rem 5rem;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.cta::before{
+  content:'';position:absolute;top:-30%;left:50%;
+  transform:translateX(-50%);
+  width:700px;height:700px;border-radius:50%;
+  border:0.5px solid rgba(126,179,224,0.06);pointer-events:none;
+}
+
+.inner{position:relative;z-index:1;max-width:680px;margin:0 auto}
+
+.label{
+  font-size:0.58rem;font-weight:400;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--blue-baby);margin-bottom:1.2rem;
+  display:flex;align-items:center;justify-content:center;gap:0.8rem;
+}
+.label::before,.label::after{content:'';display:block;width:22px;height:0.5px;background:var(--blue-baby)}
+
+.title{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:clamp(2.4rem,5vw,4.2rem);font-weight:300;
+  line-height:1.12;color:var(--cream);margin-bottom:1.5rem;
+}
+.title em{font-style:italic;color:var(--blue-baby)}
+
+.sub{
+  font-size:0.88rem;line-height:2;
+  color:rgba(250,246,238,0.52);
+  max-width:480px;margin:0 auto 3rem;
+}
+
+.actions{
+  display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;
+  margin-bottom:2.5rem;
+}
+
+.btnPrimary{
+  font-family:var(--font-jost),'Jost',sans-serif;
+  font-size:0.63rem;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--dark);background:var(--blue-soft);
+  text-decoration:none;padding:1.1rem 2.6rem;
+  transition:background 0.28s;
+}
+.btnPrimary:hover{background:var(--blue-baby)}
+
+.btnGhost{
+  font-family:var(--font-jost),'Jost',sans-serif;
+  font-size:0.63rem;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--cream);text-decoration:none;
+  padding:1.1rem 2.6rem;
+  border:0.5px solid rgba(250,246,238,0.3);
+  transition:border-color 0.28s,background 0.28s;
+}
+.btnGhost:hover{border-color:rgba(250,246,238,0.7);background:rgba(250,246,238,0.06)}
+
+.trust{
+  display:flex;align-items:center;justify-content:center;
+  gap:0.8rem;flex-wrap:wrap;
+  font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:rgba(250,246,238,0.3);
+}
+.dot{color:rgba(126,179,224,0.3)}
+
+@media(max-width:900px){
+  .cta{padding:5rem 1.5rem}
+  .actions{flex-direction:column;align-items:center}
+}

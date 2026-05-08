@@ -2,31 +2,23 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import styles from './Nav.module.css'
 
 const links = [
-  { href: '#about', label: 'About' },
-  { href: '#services', label: 'Services' },
-  { href: '#gallery', label: 'Gallery' },
-  { href: '#why', label: 'Why VØR' },
-  { href: '#testimonials', label: 'Testimonials' },
-  { href: '#book', label: 'Contact' },
+  { href: '/about', label: 'About' },
+  { href: '/services', label: 'Services' },
+  { href: '/gallery', label: 'Gallery' },
+  { href: '/book', label: 'Contact' },
 ]
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
-  const [active, setActive] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 60)
-      let cur = ''
-      document.querySelectorAll('section[id]').forEach(s => {
-        if (window.scrollY >= (s as HTMLElement).offsetTop - 130) cur = s.id
-      })
-      setActive(cur)
-    }
+    const onScroll = () => setScrolled(window.scrollY > 60)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
@@ -36,10 +28,12 @@ export default function Nav() {
     return () => { document.body.style.overflow = '' }
   }, [menuOpen])
 
+  useEffect(() => { setMenuOpen(false) }, [pathname])
+
   return (
     <>
       <nav className={`${styles.nav} ${scrolled ? styles.scrolled : ''}`}>
-        <Link href="#hero" className={styles.logo} onClick={() => setMenuOpen(false)}>
+        <Link href="/" className={styles.logo}>
           <div className={styles.logoWord}>VØR<span>.</span></div>
           <div className={styles.logoTagline}>We don't just clean windows — we reveal clarity</div>
         </Link>
@@ -47,18 +41,17 @@ export default function Nav() {
         <ul className={styles.links}>
           {links.map(l => (
             <li key={l.href}>
-              <a
+              <Link
                 href={l.href}
-                className={styles.link}
-                style={{ color: active === l.href.slice(1) ? 'var(--blue-royal)' : '' }}
+                className={`${styles.link} ${pathname === l.href ? styles.linkActive : ''}`}
               >
                 {l.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
 
-        <a href="#book" className={styles.cta}>Book Now</a>
+        <Link href="/book" className={styles.cta}>Book Now</Link>
 
         <button
           className={`${styles.hamburger} ${menuOpen ? styles.open : ''}`}
@@ -71,20 +64,17 @@ export default function Nav() {
         </button>
       </nav>
 
-      {/* Mobile overlay */}
       <div className={`${styles.overlay} ${menuOpen ? styles.overlayOpen : ''}`}>
         <ul className={styles.overlayLinks}>
           {links.map(l => (
             <li key={l.href}>
-              <a href={l.href} className={styles.overlayLink} onClick={() => setMenuOpen(false)}>
+              <Link href={l.href} className={styles.overlayLink}>
                 {l.label}
-              </a>
+              </Link>
             </li>
           ))}
           <li>
-            <a href="#book" className={styles.overlayCta} onClick={() => setMenuOpen(false)}>
-              Book Now
-            </a>
+            <Link href="/book" className={styles.overlayCta}>Book Now</Link>
           </li>
         </ul>
       </div>
