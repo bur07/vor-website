@@ -11,20 +11,31 @@ export async function POST(req: Request) {
 
     const resend = getResend()
 
-    await Promise.all([
-      resend.emails.send({
-        from: 'VØR Window Co. <onboarding@resend.dev>',
-        to: process.env.TO_EMAIL ?? 'noahrylands@gmail.com',
-        subject: `New consultation — ${data.firstName} ${data.lastName} · ${data.suburb || data.address}`,
-        html: buildEmailHtml(data),
-      }),
-      resend.emails.send({
-        from: 'VØR Window Co. <onboarding@resend.dev>',
-        to: data.email,
-        subject: `Your VØR consultation request — we'll be in touch shortly`,
-        html: buildClientConfirmationHtml(data),
-      }),
-    ])
+    // Noah's notification — required
+    const ownerResult = await resend.emails.send({
+      from: 'VØR Window Co. <onboarding@resend.dev>',
+      to: process.env.TO_EMAIL ?? 'noahrylands@gmail.com',
+      subject: `New consultation — ${data.firstName} ${data.lastName} · ${data.suburb || data.address}`,
+      html: buildEmailHtml(data),
+    })
+
+    if (ownerResult.error) {
+      console.error('Owner email failed:', ownerResult.error)
+      return Response.json({ error: 'Failed to send' }, { status: 500 })
+    }
+
+    // Client confirmation — best-effort (requires verified sending domain)
+    const clientResult = await resend.emails.send({
+      from: 'VØR Window Co. <onboarding@resend.dev>',
+      to: data.email,
+      subject: `Your VØR consultation request — we'll be in touch shortly`,
+      html: buildClientConfirmationHtml(data),
+    })
+
+    if (clientResult.error) {
+      console.error('Client confirmation email failed:', clientResult.error)
+      // Don't fail the request — Noah's email already sent
+    }
 
     return Response.json({ ok: true })
   } catch (err) {
