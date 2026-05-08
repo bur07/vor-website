@@ -1,0 +1,79 @@
+.services{background:var(--cream);padding:8rem 5rem}
+
+.intro{
+  display:grid;grid-template-columns:1.2fr 1fr;
+  gap:5rem;margin-bottom:5rem;align-items:end;
+}
+.intro p{font-size:0.88rem;line-height:2.05;color:var(--text-body)}
+
+.sectionLabel{
+  font-size:0.58rem;font-weight:400;letter-spacing:0.3em;
+  text-transform:uppercase;color:var(--blue-royal);margin-bottom:0.9rem;
+  display:flex;align-items:center;gap:0.8rem;
+}
+.sectionLabel::before{content:'';display:block;width:22px;height:0.5px;background:var(--blue-royal)}
+.sectionTitle{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:clamp(2.4rem,4.5vw,4rem);font-weight:300;
+  line-height:1.12;color:var(--blue-deep);
+}
+.sectionTitle em{font-style:italic;color:var(--blue-royal)}
+.divider{width:44px;height:0.5px;background:var(--blue-mid);margin:2rem 0}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+
+.card{
+  background:var(--cream);
+  padding:3.5rem 2.8rem;
+  border:0.5px solid var(--border);
+  position:relative;overflow:hidden;
+  transition:background 0.35s,border-color 0.35s;
+  height:100%;
+}
+.card:hover{background:var(--blue-pale);border-color:var(--blue-soft)}
+
+.featured{background:var(--blue-deep);border-color:var(--blue-deep)}
+.featured:hover{background:var(--blue-deep)}
+.featured .num{color:rgba(184,213,239,0.2)}
+.featured .name,.featured .price{color:var(--cream)}
+.featured .desc{color:rgba(250,246,238,0.56)}
+.featured .price{color:var(--blue-soft)}
+.featured .price span{color:rgba(250,246,238,0.38)}
+.featured .arrow{opacity:1;transform:translate(0,0);color:var(--blue-soft)}
+
+.badge{
+  font-size:0.54rem;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--blue-baby);background:rgba(126,179,224,0.14);
+  padding:0.3rem 0.8rem;display:inline-block;margin-bottom:1.5rem;
+  border:0.5px solid rgba(126,179,224,0.22);
+}
+.num{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:4.5rem;font-weight:300;color:var(--cream-mid);line-height:1;margin-bottom:1.5rem;
+}
+.name{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:1.55rem;font-weight:400;color:var(--blue-deep);margin-bottom:0.8rem;
+}
+.desc{font-size:0.8rem;line-height:1.95;color:var(--text-body);margin-bottom:2rem}
+.price{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:1.8rem;font-weight:300;color:var(--blue-royal);
+}
+.price span{
+  font-family:var(--font-jost),'Jost',sans-serif;
+  font-size:0.62rem;font-weight:300;letter-spacing:0.1em;
+  color:var(--text-muted);margin-left:0.3rem;vertical-align:middle;
+}
+.arrow{
+  position:absolute;bottom:2.8rem;right:2.8rem;
+  font-size:1.1rem;color:var(--blue-mid);
+  opacity:0;transform:translate(-6px,6px);transition:all 0.3s;
+}
+.card:hover .arrow{opacity:1;transform:translate(0,0)}
+
+@media(max-width:900px){
+  .services{padding:5rem 1.5rem}
+  .intro{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr}
+}

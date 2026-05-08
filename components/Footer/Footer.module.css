@@ -1,0 +1,59 @@
+.footer{
+  background:#08111D;
+  padding:5rem;
+  display:grid;grid-template-columns:1.4fr 1fr 1fr;
+  gap:4rem;
+  border-top:0.5px solid rgba(126,179,224,0.09);
+}
+
+.logo{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:2rem;font-weight:300;letter-spacing:0.3em;
+  color:var(--cream);margin-bottom:0.35rem;
+}
+.logo span{color:var(--blue-baby)}
+.tagline{
+  font-size:0.56rem;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:1.2rem;
+}
+.brand p{
+  font-size:0.78rem;line-height:1.9;
+  color:rgba(250,246,238,0.26);max-width:260px;
+}
+
+.contactLinks{
+  margin-top:2rem;display:flex;flex-direction:column;gap:0.6rem;
+}
+.contactLinks a,.contactLinks span{
+  font-size:0.78rem;color:rgba(250,246,238,0.32);
+  text-decoration:none;transition:color 0.2s;letter-spacing:0.04em;
+}
+.contactLinks a:hover{color:var(--blue-baby)}
+
+.col h4{
+  font-size:0.57rem;font-weight:400;letter-spacing:0.24em;
+  text-transform:uppercase;color:var(--blue-baby);margin-bottom:1.5rem;
+}
+.col ul{list-style:none;display:flex;flex-direction:column;gap:0.7rem}
+.col ul li a{
+  font-size:0.78rem;color:rgba(250,246,238,0.28);
+  text-decoration:none;transition:color 0.2s;letter-spacing:0.04em;
+}
+.col ul li a:hover{color:var(--blue-baby)}
+
+.bottom{
+  background:#08111D;
+  padding:1.8rem 5rem;
+  border-top:0.5px solid rgba(250,246,238,0.05);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.bottom p{font-size:0.62rem;color:rgba(250,246,238,0.16);letter-spacing:0.08em}
+.vorSign{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:0.9rem;letter-spacing:0.25em;color:rgba(126,179,224,0.28);
+}
+
+@media(max-width:900px){
+  .footer{grid-template-columns:1fr;gap:2.5rem;padding:3rem 1.5rem}
+  .bottom{padding:1.2rem 1.5rem;flex-direction:column;gap:0.5rem;text-align:center}
+}

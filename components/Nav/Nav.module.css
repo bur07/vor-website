@@ -1,0 +1,101 @@
+.nav{
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:100;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:1.6rem 5rem;
+  background:rgba(250,246,238,0.94);
+  backdrop-filter:blur(16px);
+  border-bottom:0.5px solid var(--border);
+  transition:padding 0.4s,box-shadow 0.4s;
+}
+.scrolled{
+  padding:1rem 5rem;
+  box-shadow:0 2px 40px rgba(27,58,92,0.06);
+}
+
+.logo{display:flex;flex-direction:column;gap:0.1rem;text-decoration:none}
+.logoWord{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:1.75rem;font-weight:300;
+  letter-spacing:0.3em;color:var(--blue-deep);line-height:1;
+}
+.logoWord span{color:var(--blue-royal)}
+.logoTagline{
+  font-size:0.52rem;font-weight:300;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--text-muted);
+}
+
+.links{display:flex;gap:2.8rem;list-style:none}
+.link{
+  font-size:0.68rem;font-weight:400;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--text-body);text-decoration:none;
+  position:relative;transition:color 0.25s;
+}
+.link::after{
+  content:'';position:absolute;bottom:-3px;left:0;
+  width:0;height:0.5px;background:var(--blue-royal);transition:width 0.3s;
+}
+.link:hover{color:var(--blue-royal)}
+.link:hover::after{width:100%}
+
+.cta{
+  font-size:0.63rem;font-weight:400;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--cream);background:var(--blue-royal);
+  text-decoration:none;padding:0.65rem 1.6rem;
+  transition:background 0.25s;
+}
+.cta:hover{background:var(--blue-deep)}
+
+/* hamburger */
+.hamburger{
+  display:none;flex-direction:column;gap:5px;
+  background:none;border:none;cursor:pointer;padding:4px;
+}
+.hamburger span{
+  display:block;width:24px;height:1px;
+  background:var(--blue-deep);
+  transition:transform 0.3s,opacity 0.3s;
+}
+.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.open span:nth-child(2){opacity:0}
+.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+/* mobile overlay */
+.overlay{
+  position:fixed;inset:0;
+  background:var(--cream);
+  z-index:99;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.4s;
+}
+.overlayOpen{opacity:1;pointer-events:all}
+
+.overlayLinks{list-style:none;text-align:center;display:flex;flex-direction:column;gap:2rem}
+.overlayLink{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:2.2rem;font-weight:300;
+  letter-spacing:0.1em;color:var(--blue-deep);
+  text-decoration:none;transition:color 0.2s;
+}
+.overlayLink:hover{color:var(--blue-royal)}
+.overlayCta{
+  display:inline-block;margin-top:0.5rem;
+  font-size:0.65rem;font-weight:400;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--cream);background:var(--blue-royal);
+  padding:0.85rem 2.5rem;text-decoration:none;
+  transition:background 0.25s;
+}
+.overlayCta:hover{background:var(--blue-deep)}
+
+@media(max-width:900px){
+  .nav,.scrolled{padding:1.2rem 1.5rem}
+  .links,.cta{display:none}
+  .hamburger{display:flex}
+}

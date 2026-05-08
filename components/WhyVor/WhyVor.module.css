@@ -1,0 +1,42 @@
+.why{background:var(--cream);padding:7rem 5rem}
+
+.header{text-align:center;max-width:580px;margin:0 auto}
+
+.sectionLabel{
+  font-size:0.58rem;font-weight:400;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--blue-royal);margin-bottom:0.9rem;
+  display:flex;align-items:center;justify-content:center;gap:0.8rem;
+}
+.sectionLabel::before{content:'';display:block;width:22px;height:0.5px;background:var(--blue-royal)}
+.sectionTitle{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:clamp(2.4rem,4.5vw,4rem);font-weight:300;line-height:1.12;color:var(--blue-deep);
+}
+.sectionTitle em{font-style:italic;color:var(--blue-royal)}
+.divider{width:44px;height:0.5px;background:var(--blue-mid);margin:2rem auto}
+
+.grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:2px;background:var(--border);margin-top:4rem;
+}
+
+.card{background:var(--cream);padding:3rem 2.5rem;transition:background 0.3s;height:100%}
+.card:hover{background:var(--blue-pale)}
+
+.icon{
+  width:44px;height:44px;
+  border:0.5px solid var(--blue-soft);
+  display:flex;align-items:center;justify-content:center;margin-bottom:1.8rem;
+}
+.icon svg{width:20px;height:20px;stroke:var(--blue-royal)}
+
+.cardTitle{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:1.25rem;font-weight:400;color:var(--blue-deep);margin-bottom:0.75rem;
+}
+.cardDesc{font-size:0.78rem;line-height:1.95;color:var(--text-body)}
+
+@media(max-width:900px){
+  .why{padding:5rem 1.5rem}
+  .grid{grid-template-columns:1fr}
+}

@@ -1,0 +1,53 @@
+.testimonials{background:var(--blue-pale);padding:8rem 5rem}
+
+.layout{
+  display:grid;grid-template-columns:1fr 2fr;
+  gap:7rem;align-items:start;margin-top:4rem;
+}
+.side p{font-size:0.85rem;line-height:1.95;color:var(--text-body);margin-top:1.2rem}
+
+.sectionLabel{
+  font-size:0.58rem;font-weight:400;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--blue-royal);margin-bottom:0.9rem;display:flex;align-items:center;gap:0.8rem;
+}
+.sectionLabel::before{content:'';display:block;width:22px;height:0.5px;background:var(--blue-royal)}
+.sectionTitle{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:clamp(2.4rem,4.5vw,4rem);font-weight:300;line-height:1.12;color:var(--blue-deep);
+}
+.sectionTitle em{font-style:italic;color:var(--blue-royal)}
+.divider{width:44px;height:0.5px;background:var(--blue-mid);margin:2rem 0}
+
+.item{padding:2.8rem 0;border-bottom:0.5px solid rgba(42,95,165,0.15)}
+.list .item:first-child{border-top:0.5px solid rgba(42,95,165,0.15)}
+
+.stars{display:flex;gap:3px;margin-bottom:0.8rem}
+.star{color:var(--blue-mid);font-size:0.75rem}
+
+.quoteMark{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:4rem;line-height:0.6;color:var(--blue-soft);
+  margin-bottom:0.8rem;display:block;
+}
+.quote{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:1.25rem;font-weight:300;font-style:italic;
+  line-height:1.65;color:var(--blue-deep);margin-bottom:1.4rem;
+}
+
+.author{display:flex;align-items:center;gap:1rem}
+.avatar{
+  width:40px;height:40px;border-radius:50%;background:var(--blue-mid);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.68rem;font-weight:400;letter-spacing:0.05em;color:var(--cream);
+}
+.authorName{font-size:0.75rem;font-weight:400;letter-spacing:0.08em;color:var(--blue-deep)}
+.authorRole{
+  font-size:0.6rem;letter-spacing:0.12em;color:var(--text-muted);
+  margin-top:0.15rem;text-transform:uppercase;
+}
+
+@media(max-width:900px){
+  .testimonials{padding:5rem 1.5rem}
+  .layout{grid-template-columns:1fr;gap:2.5rem}
+}

@@ -1,0 +1,27 @@
+.cursor{
+  position:fixed;
+  width:8px;
+  height:8px;
+  background:var(--blue-royal);
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width 0.3s,height 0.3s;
+}
+
+.cursorRing{
+  position:fixed;
+  width:32px;
+  height:32px;
+  border:1px solid var(--blue-baby);
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:width 0.3s,height 0.3s,border-color 0.3s;
+}
+
+@media(max-width:900px){
+  .cursor,.cursorRing{display:none}
+}

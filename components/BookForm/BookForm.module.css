@@ -1,0 +1,93 @@
+.section{
+  background:var(--blue-deep);
+  display:grid;grid-template-columns:1fr 1.1fr;
+  gap:7rem;align-items:start;padding:8rem 5rem;
+}
+
+.sectionLabel{
+  font-size:0.58rem;font-weight:400;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--blue-baby);margin-bottom:0.9rem;display:flex;align-items:center;gap:0.8rem;
+}
+.sectionLabel::before{content:'';display:block;width:22px;height:0.5px;background:var(--blue-baby)}
+.sectionTitle{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:clamp(2.4rem,4.5vw,4rem);font-weight:300;line-height:1.12;color:var(--cream);
+}
+.sectionTitle em{font-style:italic;color:var(--blue-baby)}
+.divider{width:44px;height:0.5px;background:var(--blue-mid);margin:2rem 0}
+.info p{font-size:0.85rem;line-height:2;color:rgba(250,246,238,0.52);margin-top:1.2rem}
+
+.contactDetail{margin-top:3.5rem;display:flex;flex-direction:column;gap:1.2rem}
+.contactItem{display:flex;gap:1.2rem;align-items:center}
+.contactIcon{
+  width:42px;height:42px;
+  border:0.5px solid rgba(126,179,224,0.22);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.contactIcon svg{width:17px;height:17px;stroke:var(--blue-baby)}
+.contactText{font-size:0.82rem;color:rgba(250,246,238,0.58);letter-spacing:0.04em}
+.contactText strong{
+  color:rgba(250,246,238,0.8);font-weight:400;display:block;
+  font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:0.15rem;
+}
+
+/* Form */
+.formWrap{
+  background:rgba(250,246,238,0.04);
+  border:0.5px solid rgba(126,179,224,0.11);
+  padding:2.8rem;
+}
+.formTitle{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:1.4rem;font-weight:300;color:var(--cream);margin-bottom:2rem;
+}
+
+.formRow{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.formRowFull{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1rem}
+
+.formGroup{display:flex;flex-direction:column;gap:0.45rem}
+.formGroup label{
+  font-size:0.57rem;font-weight:400;letter-spacing:0.22em;
+  text-transform:uppercase;color:rgba(250,246,238,0.36);
+}
+.formGroup input,.formGroup select,.formGroup textarea{
+  background:rgba(250,246,238,0.05);
+  border:0.5px solid rgba(250,246,238,0.1);
+  color:var(--cream);
+  font-family:var(--font-jost),'Jost',sans-serif;
+  font-size:0.82rem;font-weight:300;
+  padding:0.8rem 1rem;outline:none;
+  transition:border-color 0.25s;width:100%;
+}
+.formGroup select option{background:var(--blue-deep);color:var(--cream)}
+.formGroup input:focus,.formGroup select:focus,.formGroup textarea:focus{
+  border-color:rgba(126,179,224,0.44);
+}
+.formGroup input::placeholder,.formGroup textarea::placeholder{color:rgba(250,246,238,0.18)}
+.formGroup textarea{resize:vertical;min-height:100px}
+
+.submit{
+  margin-top:1.8rem;
+  font-family:var(--font-jost),'Jost',sans-serif;
+  font-size:0.63rem;font-weight:400;
+  letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--dark);background:var(--blue-soft);
+  border:none;padding:1.1rem 2.5rem;
+  cursor:pointer;transition:background 0.25s;width:100%;
+}
+.submit:hover:not(:disabled){background:var(--blue-baby)}
+.submit:disabled{opacity:0.6;cursor:not-allowed}
+
+.successMsg{
+  font-size:0.88rem;line-height:1.9;
+  color:rgba(250,246,238,0.6);margin-top:1rem;
+}
+.errorMsg{
+  font-size:0.75rem;color:#f87171;margin-top:1rem;letter-spacing:0.04em;
+}
+
+@media(max-width:900px){
+  .section{grid-template-columns:1fr;gap:3rem;padding:5rem 1.5rem}
+  .formWrap{padding:2rem 1.5rem}
+  .formRow{grid-template-columns:1fr}
+}

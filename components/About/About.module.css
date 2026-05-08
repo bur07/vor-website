@@ -1,0 +1,70 @@
+.about{
+  background:var(--cream-warm);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7rem;
+  align-items:center;
+  padding:8rem 5rem;
+}
+
+.imgWrap{position:relative}
+.aboutImg{position:relative;height:580px}
+
+.aboutImgFrame{
+  position:absolute;top:-1.2rem;left:-1.2rem;right:1.2rem;bottom:1.2rem;
+  border:0.5px solid var(--blue-soft);z-index:-1;pointer-events:none;
+}
+.aboutImgCaption{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(14,30,48,0.72));
+  padding:2rem 1.8rem 1.4rem;
+  color:var(--cream);font-size:0.68rem;letter-spacing:0.14em;
+}
+
+.aboutText p{
+  font-size:0.88rem;line-height:2.05;
+  color:var(--text-body);margin-bottom:1.2rem;
+}
+.sectionLabel{
+  font-size:0.58rem;font-weight:400;
+  letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--blue-royal);margin-bottom:0.9rem;
+  display:flex;align-items:center;gap:0.8rem;
+}
+.sectionLabel::before{content:'';display:block;width:22px;height:0.5px;background:var(--blue-royal)}
+.sectionTitle{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:clamp(2.4rem,4.5vw,4rem);
+  font-weight:300;line-height:1.12;color:var(--blue-deep);
+}
+.sectionTitle em{font-style:italic;color:var(--blue-royal)}
+.divider{width:44px;height:0.5px;background:var(--blue-mid);margin:2rem 0}
+
+.philosophy{
+  margin:2rem 0;padding:1.8rem 2rem;
+  background:var(--blue-pale);
+  border-left:2px solid var(--blue-royal);
+}
+.philosophy p{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:1.15rem;font-style:italic;line-height:1.7;
+  color:var(--blue-deep);margin:0;
+}
+
+.statRow{
+  display:flex;gap:3.5rem;margin-top:2.5rem;
+  padding-top:2.5rem;border-top:0.5px solid var(--border);
+}
+.statNum{
+  font-family:var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size:2.8rem;font-weight:300;color:var(--blue-royal);line-height:1;
+}
+.statLbl{
+  font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--text-muted);margin-top:0.4rem;
+}
+
+@media(max-width:900px){
+  .about{grid-template-columns:1fr;gap:3rem;padding:5rem 1.5rem}
+  .aboutImg{height:360px}
+}
