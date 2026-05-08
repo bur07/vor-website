@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import styles from './BookForm.module.css'
 
 interface FormData {
@@ -55,8 +56,11 @@ function Field({ label, error, required, children }: {
 }
 
 export default function BookFormClient() {
+  const params  = useSearchParams()
+  const preService = params.get('service') ?? ''
+
   const [step, setStep]     = useState(1)
-  const [form, setForm]     = useState<FormData>(EMPTY)
+  const [form, setForm]     = useState<FormData>({ ...EMPTY, service: preService })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [status, setStatus] = useState<Status>('idle')
 

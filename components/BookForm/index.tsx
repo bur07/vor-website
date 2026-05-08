@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import BookFormClient from './BookFormClient'
 import styles from './BookForm.module.css'
 
@@ -14,7 +15,9 @@ export default function BookSection() {
         </p>
       </div>
       <div className={styles.container}>
-        <BookFormClient />
+        <Suspense>
+          <BookFormClient />
+        </Suspense>
       </div>
     </section>
   )

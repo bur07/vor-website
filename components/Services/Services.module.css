@@ -23,12 +23,14 @@
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
 
 .card{
+  display:block;text-decoration:none;
   background:var(--cream);
   padding:3.5rem 2.8rem;
   border:0.5px solid var(--border);
   position:relative;overflow:hidden;
   transition:background 0.35s,border-color 0.35s;
   height:100%;
+  cursor:pointer;
 }
 .card:hover{background:var(--blue-pale);border-color:var(--blue-soft)}
 
