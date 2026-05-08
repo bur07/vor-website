@@ -40,7 +40,7 @@ export default function Footer() {
       </footer>
 
       <div className={styles.bottom}>
-        <p>© 2025 VØR Window Co. All rights reserved. Noah Rylands — Sydney &amp; ACT.</p>
+        <p>© 2025 VØR Window Co. All rights reserved. Noah Rylands — Sydney &amp; ACT. ABN 58 218 225 007</p>
         <div className={styles.vorSign}>VØR</div>
       </div>
     </>
