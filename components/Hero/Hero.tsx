@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import styles from './Hero.module.css'
 
 export default function Hero() {
@@ -13,7 +14,7 @@ export default function Hero() {
           We don't just clean windows — we reveal a new level of purity and light. For those who take pride in their home, we bring what's unseen into reality — one pane at a time.
         </p>
         <div className={styles.heroBtns}>
-          <a href="#book" className={styles.btnPrimary}>Book Your Consultation</a>
+          <Link href="/book" className={styles.btnPrimary}>Book Your Consultation</Link>
           <a href="#about" className={styles.btnGhost}>Discover VØR</a>
         </div>
       </div>

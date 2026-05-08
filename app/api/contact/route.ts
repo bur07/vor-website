@@ -5,14 +5,14 @@ export async function POST(req: Request) {
   try {
     const data: ContactFormData = await req.json()
 
-    if (!data.firstName || !data.email || !data.phone) {
+    if (!data.firstName || !data.lastName || !data.email || !data.phone) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
     await getResend().emails.send({
       from: 'VØR Window Co. <onboarding@resend.dev>',
       to: process.env.TO_EMAIL ?? 'noahrylands@gmail.com',
-      subject: `New consultation request — ${data.firstName} ${data.lastName}`,
+      subject: `New consultation — ${data.firstName} ${data.lastName} · ${data.suburb || data.address}`,
       html: buildEmailHtml(data),
     })
 
