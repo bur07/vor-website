@@ -1,4 +1,4 @@
-import { resend, buildEmailHtml } from '@/lib/resend'
+import { getResend, buildEmailHtml } from '@/lib/resend'
 import type { ContactFormData } from '@/types'
 
 export async function POST(req: Request) {
@@ -9,7 +9,7 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: 'VØR Window Co. <onboarding@resend.dev>',
       to: process.env.TO_EMAIL ?? 'noahrylands@gmail.com',
       subject: `New consultation request — ${data.firstName} ${data.lastName}`,

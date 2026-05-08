@@ -1,7 +1,9 @@
 import { Resend } from 'resend'
 import type { ContactFormData } from '@/types'
 
-export const resend = new Resend(process.env.RESEND_API_KEY)
+export function getResend() {
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 export function buildEmailHtml(data: ContactFormData): string {
   return `
