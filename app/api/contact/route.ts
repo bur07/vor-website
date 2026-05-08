@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
     // Noah's notification — required
     const ownerResult = await resend.emails.send({
-      from: 'VØR Window Co. <hello@vorwindow.com.au>',
+      from: 'VØR Window Co. <onboarding@resend.dev>',
       to: process.env.TO_EMAIL ?? 'noahrylands@gmail.com',
       subject: `New consultation — ${data.firstName} ${data.lastName} · ${data.suburb || data.address}`,
       html: buildEmailHtml(data),
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
     // Client confirmation — best-effort (requires verified sending domain)
     const clientResult = await resend.emails.send({
-      from: 'VØR Window Co. <hello@vorwindow.com.au>',
+      from: 'VØR Window Co. <onboarding@resend.dev>',
       to: data.email,
       subject: `Your VØR consultation request — we'll be in touch shortly`,
       html: buildClientConfirmationHtml(data),
