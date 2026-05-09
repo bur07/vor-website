@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     // Noah's notification — required
     const ownerResult = await resend.emails.send({
       from: 'VØR Window Co. <hello@vorwindowco.com>',
-      to: process.env.TO_EMAIL ?? 'noahrylands@gmail.com',
+      to: process.env.TO_EMAIL ?? 'info@vorwindowco.com',
       subject: `New consultation — ${data.firstName} ${data.lastName} · ${data.suburb || data.address}`,
       html: buildEmailHtml(data),
     })

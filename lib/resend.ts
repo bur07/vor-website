@@ -69,7 +69,7 @@ export function buildClientConfirmationHtml(data: ContactFormData): string {
       <p style="font-size:13px;font-weight:300;color:#4A6070;margin:0 0 32px">
         📞 <a href="tel:+61416572468" style="color:#2A5FA5;text-decoration:none">0416 572 468</a>
         &nbsp;&nbsp;·&nbsp;&nbsp;
-        ✉️ <a href="mailto:hello@vorwindow.com.au" style="color:#2A5FA5;text-decoration:none">hello@vorwindow.com.au</a>
+        ✉️ <a href="mailto:info@vorwindowco.com" style="color:#2A5FA5;text-decoration:none">info@vorwindowco.com</a>
       </p>
 
       <div style="margin-top:40px;padding-top:24px;border-top:1px solid #B8D5EF;font-size:11px;color:#6A8296;letter-spacing:0.1em">
@@ -115,7 +115,7 @@ export function buildEmailHtml(data: ContactFormData): string {
       </table>
 
       <div style="margin-top:40px;padding-top:24px;border-top:1px solid #B8D5EF;font-size:11px;color:#6A8296;letter-spacing:0.1em">
-        VØR Window Co. · Sydney &amp; ACT · hello@vorwindow.com.au
+        VØR Window Co. · Sydney &amp; ACT · info@vorwindowco.com
       </div>
     </div>
   `

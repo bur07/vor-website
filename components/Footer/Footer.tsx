@@ -10,7 +10,7 @@ export default function Footer() {
           <p>Born on the Northern Beaches of Sydney. Built to scale from Australia to the world. Elevating living, one pane at a time.</p>
           <div className={styles.contactLinks}>
             <a href="tel:+61416572468">Noah Rylands — 0416 572 468</a>
-            <a href="mailto:hello@vorwindow.com.au">hello@vorwindow.com.au</a>
+            <a href="mailto:info@vorwindowco.com">info@vorwindowco.com</a>
             <span>All of Sydney &amp; ACT</span>
           </div>
         </div>

@@ -68,7 +68,7 @@ const jsonLd = {
   description: 'Premium window cleaning services for luxury homes and real estate across Sydney and the ACT.',
   url: 'https://vorwindow.com.au',
   telephone: '+61416572468',
-  email: 'hello@vorwindow.com.au',
+  email: 'info@vorwindowco.com',
   image: 'https://vorwindow.com.au/og-image.jpg',
   priceRange: '$299 – $599+',
   currenciesAccepted: 'AUD',
