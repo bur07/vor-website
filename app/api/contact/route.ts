@@ -10,12 +10,13 @@ export async function POST(req: Request) {
     }
 
     const resend = getResend()
+    const ref = `VOR-${Date.now().toString(36).toUpperCase()}`
 
     // Noah's notification — required
     const ownerResult = await resend.emails.send({
       from: 'VØR Window Co. <hello@vorwindowco.com>',
       to: process.env.TO_EMAIL ?? 'info@vorwindowco.com',
-      subject: `New consultation — ${data.firstName} ${data.lastName} · ${data.suburb || data.address}`,
+      subject: `[${ref}] New consultation — ${data.firstName} ${data.lastName} · ${data.suburb || data.address}`,
       html: buildEmailHtml(data),
     })
 
@@ -28,7 +29,7 @@ export async function POST(req: Request) {
     const clientResult = await resend.emails.send({
       from: 'VØR Window Co. <hello@vorwindowco.com>',
       to: data.email,
-      subject: `Your VØR consultation request — we'll be in touch shortly`,
+      subject: `[${ref}] Your VØR consultation request — we'll be in touch shortly`,
       html: buildClientConfirmationHtml(data),
     })
 
