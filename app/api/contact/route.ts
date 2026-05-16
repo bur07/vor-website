@@ -1,4 +1,5 @@
 import { getResend, buildEmailHtml, buildClientConfirmationHtml } from '@/lib/resend'
+import { sendClientSms } from '@/lib/twilio'
 import type { ContactFormData } from '@/types'
 
 export async function POST(req: Request) {
@@ -35,7 +36,13 @@ export async function POST(req: Request) {
 
     if (clientResult.error) {
       console.error('Client confirmation email failed:', clientResult.error)
-      // Don't fail the request — Noah's email already sent
+    }
+
+    // SMS confirmation — best-effort, silently skipped if Twilio not configured
+    try {
+      await sendClientSms(data)
+    } catch (err) {
+      console.error('Client SMS failed:', err)
     }
 
     return Response.json({ ok: true })
