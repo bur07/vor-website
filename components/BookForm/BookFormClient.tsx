@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import confetti from 'canvas-confetti'
 import styles from './BookForm.module.css'
 
 interface FormData {
@@ -128,6 +129,7 @@ export default function BookFormClient() {
       })
       if (!res.ok) throw new Error()
       setStatus('success')
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#7EB3E0', '#2A5FA5', '#FAF6EE', '#1B3A5C'] })
     } catch {
       setStatus('error')
     }
