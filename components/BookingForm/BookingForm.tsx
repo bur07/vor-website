@@ -20,7 +20,8 @@ interface ClientData {
 }
 
 type LookupState = 'idle' | 'not_ready' | 'found'
-type Status = 'idle' | 'loading' | 'success' | 'error'
+type Step = 'form' | 'review'
+type Status = 'idle' | 'loading' | 'error'
 
 const EMPTY_CLIENT: ClientData = { name: '', email: '', phone: '', date: '', time: '' }
 
@@ -42,6 +43,7 @@ export default function BookingForm() {
   const [client, setClient]         = useState<ClientData>(EMPTY_CLIENT)
   const [payment, setPayment]       = useState<'deposit' | 'full'>('full')
   const [errors, setErrors]         = useState<Partial<ClientData>>({})
+  const [step, setStep]             = useState<Step>('form')
   const [status, setStatus]         = useState<Status>('idle')
 
   const doLookup = (code: string) => {
@@ -74,6 +76,7 @@ export default function BookingForm() {
   const deposit    = assignment ? Math.round(assignment.price * 0.2) : 0
   const amountPaid = payment === 'deposit' ? deposit : (assignment?.price ?? 0)
   const balanceDue = payment === 'deposit' ? (assignment?.price ?? 0) - deposit : 0
+  const paymentType = payment === 'deposit' ? '20% Deposit' : 'Full Payment'
 
   const setC = (field: keyof ClientData) =>
     (e: React.ChangeEvent<HTMLInputElement>) => setClient(c => ({ ...c, [field]: e.target.value }))
@@ -88,10 +91,14 @@ export default function BookingForm() {
     return e
   }
 
-  const handleSubmit = async () => {
+  const handleReview = () => {
     const e = validate()
     if (Object.keys(e).length) { setErrors(e); return }
     setErrors({})
+    setStep('review')
+  }
+
+  const handlePay = async () => {
     setStatus('loading')
     try {
       const res = await fetch('/api/create-checkout-session', {
@@ -102,14 +109,14 @@ export default function BookingForm() {
           tier:        assignment!.tier,
           price:       assignment!.price,
           note:        assignment!.note,
-          paymentType: payment === 'deposit' ? '20% Deposit' : 'Full Payment',
+          paymentType,
           amountPaid,
           balanceDue,
           ...client,
         }),
       })
       const data = await res.json()
-      if (!res.ok || !data.url) throw new Error(data.error ?? 'No checkout URL')
+      if (!res.ok || !data.url) throw new Error()
       window.location.href = data.url
     } catch {
       setStatus('error')
@@ -118,6 +125,58 @@ export default function BookingForm() {
 
   const today = new Date().toISOString().split('T')[0]
 
+  // ── Review / payment summary screen ──────────────────────────
+  if (step === 'review' && assignment) {
+    return (
+      <div className={styles.wrap}>
+        <div className={styles.reviewCard}>
+          <div className={styles.reviewHeader}>
+            <div className={styles.reviewEyebrow}>Order Summary</div>
+            <div className={styles.reviewTitle}>{assignment.tier}</div>
+            <div className={styles.reviewRef}>{assignment.refCode}</div>
+          </div>
+
+          <div className={styles.reviewRows}>
+            <div className={styles.reviewRow}><span>Name</span><strong>{client.name}</strong></div>
+            <div className={styles.reviewRow}><span>Email</span><strong>{client.email}</strong></div>
+            <div className={styles.reviewRow}><span>Phone</span><strong>{client.phone}</strong></div>
+            <div className={styles.reviewRow}><span>Date</span><strong>{client.date}</strong></div>
+            <div className={styles.reviewRow}><span>Time</span><strong>{client.time}</strong></div>
+            {assignment.note && <div className={styles.reviewRow}><span>Note</span><strong>{assignment.note}</strong></div>}
+          </div>
+
+          <div className={styles.reviewPayment}>
+            <div className={styles.reviewPayType}>{paymentType}</div>
+            <div className={styles.reviewAmount}>${amountPaid.toLocaleString()} <span>AUD</span></div>
+            {balanceDue > 0 && (
+              <div className={styles.reviewBalance}>${balanceDue.toLocaleString()} AUD balance due on the day</div>
+            )}
+          </div>
+
+          {status === 'error' && (
+            <p className={styles.submitErr}>
+              Payment could not be started. Please call Noah on 0416 572 468.
+            </p>
+          )}
+
+          <button
+            type="button"
+            className={styles.payBtn}
+            onClick={handlePay}
+            disabled={status === 'loading'}
+          >
+            {status === 'loading' ? 'Redirecting to payment...' : `Pay $${amountPaid.toLocaleString()} AUD →`}
+          </button>
+
+          <button type="button" className={styles.backBtn} onClick={() => { setStep('form'); setStatus('idle') }}>
+            ← Edit details
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Main booking form ─────────────────────────────────────────
   return (
     <div className={styles.wrap}>
       {/* Step 1 — Reference code lookup */}
@@ -137,7 +196,6 @@ export default function BookingForm() {
             Look Up →
           </button>
         </div>
-
         {lookup === 'not_ready' && (
           <div className={styles.notReady}>
             Your quote is not ready yet — we&apos;ll contact you within 24 hours.
@@ -145,7 +203,7 @@ export default function BookingForm() {
         )}
       </div>
 
-      {/* Step 2 — Quote found, show service + booking form */}
+      {/* Step 2 — Quote found */}
       {lookup === 'found' && assignment && (
         <div className={styles.bookCard}>
           {/* Service summary */}
@@ -222,12 +280,8 @@ export default function BookingForm() {
             </div>
           </div>
 
-          {status === 'error' && (
-            <p className={styles.submitErr}>Something went wrong. Please call Noah on 0416 572 468.</p>
-          )}
-
-          <button type="button" className={styles.submit} onClick={handleSubmit} disabled={status === 'loading'}>
-            {status === 'loading' ? 'Confirming...' : `Confirm Booking — $${amountPaid.toLocaleString()} AUD →`}
+          <button type="button" className={styles.submit} onClick={handleReview}>
+            Review &amp; Pay →
           </button>
         </div>
       )}
