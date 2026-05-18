@@ -1,11 +1,17 @@
-import { listAssignments, saveAssignment, deleteAssignment } from '@/lib/edgeStore'
+import { listAssignments, getAssignment, saveAssignment, deleteAssignment } from '@/lib/edgeStore'
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url)
+    const ref = searchParams.get('ref')
+    if (ref) {
+      const assignment = await getAssignment(ref.toUpperCase())
+      return Response.json(assignment ?? null)
+    }
     const assignments = await listAssignments()
     return Response.json(assignments)
   } catch {
-    return Response.json([])
+    return Response.json(null)
   }
 }
 

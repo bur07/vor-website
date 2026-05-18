@@ -46,16 +46,15 @@ export default function BookingForm() {
   const [step, setStep]             = useState<Step>('form')
   const [status, setStatus]         = useState<Status>('idle')
 
-  const doLookup = (code: string) => {
+  const doLookup = async (code: string) => {
     const c = code.trim().toUpperCase()
     if (!c) return
+    setLookup('idle')
     try {
-      const stored = localStorage.getItem('vor_quotes')
-      if (!stored) { setLookup('not_ready'); return }
-      const quotes = JSON.parse(stored)
-      const match = quotes[c] as Assignment | undefined
-      if (!match) { setLookup('not_ready'); return }
-      setAssignment(match)
+      const res = await fetch(`/api/quote-assignments?ref=${encodeURIComponent(c)}`)
+      const data = await res.json()
+      if (!data) { setLookup('not_ready'); return }
+      setAssignment(data as Assignment)
       setLookup('found')
     } catch {
       setLookup('not_ready')
@@ -86,7 +85,7 @@ export default function BookingForm() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleLookup = () => doLookup(refInput)
+  const handleLookup = () => { void doLookup(refInput) }
 
   const deposit    = assignment ? Math.round(assignment.price * 0.2) : 0
   const amountPaid = payment === 'deposit' ? deposit : (assignment?.price ?? 0)
@@ -204,7 +203,7 @@ export default function BookingForm() {
             placeholder="VOR-XXXX"
             value={refInput}
             onChange={e => { setRefInput(e.target.value.toUpperCase()); setLookup('idle') }}
-            onKeyDown={e => e.key === 'Enter' && handleLookup()}
+            onKeyDown={e => { if (e.key === 'Enter') handleLookup() }}
             maxLength={8}
           />
           <button type="button" className={styles.lookupBtn} onClick={handleLookup}>

@@ -112,6 +112,10 @@ export async function saveAssignment(a: QuoteAssignment) {
   await ecSet(`assign_${a.refCode}`, a)
 }
 
+export async function getAssignment(refCode: string): Promise<QuoteAssignment | null> {
+  return ecGet<QuoteAssignment>(`assign_${refCode}`)
+}
+
 export async function listAssignments(): Promise<QuoteAssignment[]> {
   const index = (await ecGet<string[]>('_assign_index')) ?? []
   if (!index.length) return []
