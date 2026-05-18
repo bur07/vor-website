@@ -82,7 +82,15 @@ export default function AdminPanel() {
     const ref = form.refCode.trim().toUpperCase()
     if (!ref || !form.price) { showFlash('Reference code and price are required.'); return }
     setSaving(true)
-    const src = pendingClient ?? requests.find(r => r.refCode === ref) ?? refClient ?? null
+    // Always attempt to resolve client info — fetch from Edge Config if not already in memory
+    let src: QuoteRequest | null = pendingClient ?? requests.find(r => r.refCode === ref) ?? refClient ?? null
+    if (!src) {
+      try {
+        const res = await fetch(`/api/quote-requests?ref=${encodeURIComponent(ref)}`)
+        const data = await res.json()
+        if (data) src = data as QuoteRequest
+      } catch {}
+    }
     const prev = quotes.find(q => q.refCode === (editing ?? ref))
     const entry: QuoteAssignment = {
       refCode: ref,
