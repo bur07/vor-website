@@ -57,6 +57,18 @@ export default function BookingForm() {
       if (!match) { setLookup('not_ready'); return }
       setAssignment(match)
       setLookup('found')
+      try {
+        const saved = localStorage.getItem('vor_client')
+        if (saved) {
+          const { name, email, phone } = JSON.parse(saved)
+          setClient(prev => ({
+            ...prev,
+            name:  name  || prev.name,
+            email: email || prev.email,
+            phone: phone || prev.phone,
+          }))
+        }
+      } catch { /* ignore */ }
     } catch {
       setLookup('not_ready')
     }

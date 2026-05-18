@@ -77,6 +77,7 @@ export default function QuoteForm() {
         body: JSON.stringify({ type: 'quote', refCode, ...form }),
       })
       if (!res.ok) throw new Error()
+      localStorage.setItem('vor_client', JSON.stringify({ name: form.name, email: form.email, phone: form.phone }))
       setStatus('success')
     } catch {
       setStatus('error')
