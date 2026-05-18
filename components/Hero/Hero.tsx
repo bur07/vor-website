@@ -15,8 +15,9 @@ export default function Hero() {
         </p>
         <div className={styles.heroBtns}>
           <Link href="/quote" className={styles.btnPrimary}>Get a Quote</Link>
-          <a href="#about" className={styles.btnGhost}>Discover VØR</a>
+          <Link href="/booking" className={styles.btnGhost}>Already Quoted? Book Now →</Link>
         </div>
+        <a href="#about" className={styles.heroScroll2}>Discover VØR ↓</a>
       </div>
 
       <div className={styles.heroBadge}>

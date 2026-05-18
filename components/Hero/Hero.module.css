@@ -73,6 +73,19 @@
 }
 .btnGhost:hover{border-color:rgba(250,246,238,0.8);background:rgba(250,246,238,0.07)}
 
+.heroScroll2{
+  display:inline-block;
+  margin-top:1.4rem;
+  font-family:var(--font-jost),'Jost',sans-serif;
+  font-size:0.58rem;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:rgba(250,246,238,0.32);
+  text-decoration:none;
+  transition:color 0.22s;
+}
+.heroScroll2:hover{color:rgba(250,246,238,0.6)}
+
 .heroBadge{
   position:absolute;right:5rem;bottom:9rem;z-index:3;
   opacity:0;animation:fadeIn 1s 1.2s forwards;

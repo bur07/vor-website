@@ -100,26 +100,14 @@ export default function QuoteForm() {
         </div>
         <p className={styles.successSub}>
           Noah will be in touch within 24 hours with your personalised quote.
-          Once you receive it, use the link below to complete your booking instantly.
+          Once you&apos;ve received it, click below to complete your booking instantly.
         </p>
-        <a
-          href={`/booking?ref=${refCode}`}
-          style={{
-            display: 'inline-block',
-            marginTop: '1.5rem',
-            fontFamily: "var(--font-jost),'Jost',sans-serif",
-            fontSize: '0.62rem',
-            letterSpacing: '0.22em',
-            textTransform: 'uppercase',
-            color: 'var(--dark)',
-            background: 'var(--blue-soft)',
-            padding: '1rem 2.4rem',
-            textDecoration: 'none',
-            transition: 'background 0.22s',
-          }}
-        >
+        <a href={`/booking?ref=${refCode}`} className={styles.bookingCta}>
           Complete Your Booking →
         </a>
+        <p className={styles.ctaNote}>
+          This link won&apos;t work until your quote has been assigned — you&apos;ll receive an email when it&apos;s ready.
+        </p>
       </div>
     )
   }
