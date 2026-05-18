@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import styles from './Footer.module.css'
 
 export default function Footer() {
@@ -42,6 +43,7 @@ export default function Footer() {
       <div className={styles.bottom}>
         <p>© 2025 VØR Window Co. All rights reserved. Noah Rylands — Sydney &amp; ACT. ABN 58 218 225 007</p>
         <div className={styles.vorSign}>VØR</div>
+        <Link href="/admin" style={{ fontSize: '0.55rem', letterSpacing: '0.14em', color: 'rgba(250,246,238,0.12)', textDecoration: 'none', textTransform: 'uppercase' }}>admin</Link>
       </div>
     </>
   )
