@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import styles from './BookingForm.module.css'
 
 interface Assignment {
@@ -34,6 +35,7 @@ function Radio({ label, value, current, onSelect }: { label: string; value: stri
 }
 
 export default function BookingForm() {
+  const searchParams = useSearchParams()
   const [refInput, setRefInput]     = useState('')
   const [lookup, setLookup]         = useState<LookupState>('idle')
   const [assignment, setAssignment] = useState<Assignment | null>(null)
@@ -42,14 +44,14 @@ export default function BookingForm() {
   const [errors, setErrors]         = useState<Partial<ClientData>>({})
   const [status, setStatus]         = useState<Status>('idle')
 
-  const handleLookup = () => {
-    const code = refInput.trim().toUpperCase()
-    if (!code) return
+  const doLookup = (code: string) => {
+    const c = code.trim().toUpperCase()
+    if (!c) return
     try {
       const stored = localStorage.getItem('vor_quotes')
       if (!stored) { setLookup('not_ready'); return }
       const quotes = JSON.parse(stored)
-      const match = quotes[code] as Assignment | undefined
+      const match = quotes[c] as Assignment | undefined
       if (!match) { setLookup('not_ready'); return }
       setAssignment(match)
       setLookup('found')
@@ -57,6 +59,17 @@ export default function BookingForm() {
       setLookup('not_ready')
     }
   }
+
+  useEffect(() => {
+    const ref = searchParams.get('ref')
+    if (ref) {
+      setRefInput(ref.toUpperCase())
+      doLookup(ref)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const handleLookup = () => doLookup(refInput)
 
   const deposit    = assignment ? Math.round(assignment.price * 0.2) : 0
   const amountPaid = payment === 'deposit' ? deposit : (assignment?.price ?? 0)

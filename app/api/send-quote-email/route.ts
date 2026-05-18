@@ -78,9 +78,10 @@ function buildEmails(d: any) {
           ${d.specialRequirements ? clientRow('Requirements', d.specialRequirements) : ''}
         </table>
       </div>
-      <p style="font-size:13px;line-height:1.8;color:#5a4a2a;margin:0 0 20px">
-        Visit <a href="https://vorwindowco.com/booking" style="color:#c9a84c;text-decoration:none">vorwindowco.com/booking</a> and enter your reference code once your quote is ready.
-      </p>
+      <div style="text-align:center;margin:28px 0">
+        <a href="https://vorwindowco.com/booking?ref=${d.refCode}" style="display:inline-block;background:#1B3A5C;color:#f5f0e8;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;text-decoration:none;padding:14px 32px">Complete Your Booking →</a>
+        <p style="font-size:11px;color:#8a7a5a;margin:10px 0 0">This link will work once your quote has been prepared.</p>
+      </div>
       <p style="font-size:12px;color:#8a7a5a;margin:0">
         Questions? Reply to this email or call Noah on <a href="tel:+61416572468" style="color:#c9a84c;text-decoration:none">0416 572 468</a>
       </p>`

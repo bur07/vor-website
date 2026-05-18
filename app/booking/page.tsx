@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import BookingForm from '@/components/BookingForm/BookingForm'
 
@@ -48,7 +49,9 @@ export default function BookingPage() {
           Enter the reference code from your quote email to confirm your appointment.
         </p>
       </div>
-      <BookingForm />
+      <Suspense>
+        <BookingForm />
+      </Suspense>
     </main>
   )
 }
