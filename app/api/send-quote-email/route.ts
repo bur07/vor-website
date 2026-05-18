@@ -1,5 +1,6 @@
 // Next.js API route — mirrors netlify/functions/send-quote-email.js for Vercel deployments
 import { Resend } from 'resend'
+import { kv } from '@vercel/kv'
 
 const FROM = 'VØR Window Co. <info@vorwindowco.com>'
 const BUSINESS_EMAIL = 'info@vorwindowco.com'
@@ -144,6 +145,29 @@ export async function POST(req: Request) {
       resend.emails.send({ from: FROM, to: BUSINESS_EMAIL, replyTo: replyToBiz, ...biz }),
       resend.emails.send({ from: FROM, to: clientEmail, replyTo: replyToClient, ...client }),
     ])
+
+    // Persist quote request so admin panel can display client info
+    if (d.type === 'quote') {
+      try {
+        await kv.set(`req:${d.refCode}`, {
+          refCode:              d.refCode,
+          name:                 d.name,
+          email:                d.email,
+          phone:                d.phone,
+          address:              d.address,
+          propertyType:         d.propertyType,
+          propertySize:         d.propertySize,
+          storeys:              d.storeys,
+          inspectionDate:       d.inspectionDate,
+          inspectionTime:       d.inspectionTime,
+          serviceArea:          d.serviceArea,
+          specialRequirements:  d.specialRequirements,
+          submittedAt:          new Date().toISOString(),
+        }, { ex: 60 * 60 * 24 * 90 }) // 90-day expiry
+      } catch {
+        // KV not configured — emails still sent, admin won't show pending requests
+      }
+    }
 
     return Response.json({ ok: true })
   } catch (err) {
