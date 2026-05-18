@@ -57,24 +57,27 @@ export default function BookingForm() {
       if (!match) { setLookup('not_ready'); return }
       setAssignment(match)
       setLookup('found')
-      try {
-        const saved = localStorage.getItem('vor_client')
-        if (saved) {
-          const { name, email, phone } = JSON.parse(saved)
-          setClient(prev => ({
-            ...prev,
-            name:  name  || prev.name,
-            email: email || prev.email,
-            phone: phone || prev.phone,
-          }))
-        }
-      } catch { /* ignore */ }
     } catch {
       setLookup('not_ready')
     }
   }
 
   useEffect(() => {
+    // Pre-fill client details from quote form immediately on mount
+    try {
+      const saved = localStorage.getItem('vor_client')
+      if (saved) {
+        const { name, email, phone } = JSON.parse(saved)
+        setClient(prev => ({
+          ...prev,
+          name:  name  || prev.name,
+          email: email || prev.email,
+          phone: phone || prev.phone,
+        }))
+      }
+    } catch { /* ignore */ }
+
+    // Auto-lookup ref code from URL
     const ref = searchParams.get('ref')
     if (ref) {
       setRefInput(ref.toUpperCase())
