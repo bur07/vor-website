@@ -1,0 +1,4 @@
+[[redirects]]
+  from = "/api/send-quote-email"
+  to = "/.netlify/functions/send-quote-email"
+  status = 200
