@@ -35,7 +35,7 @@ export default function Nav() {
       <nav className={`${styles.nav} ${scrolled ? styles.scrolled : ''}`}>
         <Link href="/" className={styles.logo}>
           <div className={styles.logoWord}>VØR<span>.</span></div>
-          <div className={styles.logoTagline}>We don't just clean windows — we reveal clarity</div>
+          <div className={styles.logoTagline}>We don&apos;t just clean windows — we reveal clarity</div>
         </Link>
 
         <ul className={styles.links}>
@@ -51,7 +51,12 @@ export default function Nav() {
           ))}
         </ul>
 
-        <Link href="/quote" className={styles.cta}>Book Now</Link>
+        <Link
+          href="/booking"
+          className={`${styles.cta} ${pathname === '/booking' ? styles.ctaActive : ''}`}
+        >
+          Book Now
+        </Link>
 
         <button
           className={`${styles.hamburger} ${menuOpen ? styles.open : ''}`}
@@ -74,7 +79,12 @@ export default function Nav() {
             </li>
           ))}
           <li>
-            <Link href="/quote" className={styles.overlayCta}>Book Now</Link>
+            <Link href="/quote" className={styles.overlayCta}>Get a Quote</Link>
+          </li>
+          <li>
+            <Link href="/booking" className={styles.overlayCta} style={{ background: 'transparent', border: '0.5px solid rgba(126,179,224,0.4)', color: 'var(--blue-baby)', marginTop: '0.5rem' }}>
+              Already Quoted? Book Now →
+            </Link>
           </li>
         </ul>
       </div>

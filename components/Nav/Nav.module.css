@@ -53,6 +53,7 @@
   transition:background 0.25s;
 }
 .cta:hover{background:var(--blue-deep)}
+.ctaActive{background:var(--blue-deep)}
 
 /* hamburger */
 .hamburger{
