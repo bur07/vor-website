@@ -25,6 +25,14 @@ interface QuoteAssignment {
   price: number
   note: string
   assignedAt: string
+  clientName?: string
+  clientEmail?: string
+  clientPhone?: string
+  clientAddress?: string
+  clientProperty?: string
+  clientStoreys?: string
+  clientInspection?: string
+  clientArea?: string
 }
 
 const TIERS = ['Essential', 'Signature', 'Prestige']
@@ -34,55 +42,73 @@ export default function AdminPanel() {
   const [authed, setAuthed]       = useState(false)
   const [pw, setPw]               = useState('')
   const [pwErr, setPwErr]         = useState('')
-  const [quotes, setQuotes]       = useState<Record<string, QuoteAssignment>>({})
+  const [quotes, setQuotes]       = useState<QuoteAssignment[]>([])
   const [requests, setRequests]   = useState<QuoteRequest[]>([])
   const [form, setForm]           = useState(EMPTY_FORM)
+  const [pendingClient, setPendingClient] = useState<QuoteRequest | null>(null)
   const [editing, setEditing]     = useState<string | null>(null)
   const [flash, setFlash]         = useState('')
   const [expanded, setExpanded]   = useState<string | null>(null)
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('vor_quotes')
-      if (stored) setQuotes(JSON.parse(stored))
-    } catch {}
-  }, [])
+  const [saving, setSaving]       = useState(false)
 
   useEffect(() => {
     if (!authed) return
-    fetch('/api/quote-requests')
-      .then(r => r.json())
-      .then(data => setRequests(Array.isArray(data) ? data : []))
-      .catch(() => {})
+    Promise.all([
+      fetch('/api/quote-requests').then(r => r.json()).catch(() => []),
+      fetch('/api/quote-assignments').then(r => r.json()).catch(() => []),
+    ]).then(([reqs, assigns]) => {
+      setRequests(Array.isArray(reqs) ? reqs : [])
+      setQuotes(Array.isArray(assigns) ? assigns : [])
+    })
   }, [authed])
-
-  const persist = (updated: Record<string, QuoteAssignment>) => {
-    setQuotes(updated)
-    localStorage.setItem('vor_quotes', JSON.stringify(updated))
-  }
 
   const showFlash = (msg: string) => {
     setFlash(msg)
     setTimeout(() => setFlash(''), 3000)
   }
 
-  const handleAssign = () => {
+  const handleAssign = async () => {
     const ref = form.refCode.trim().toUpperCase()
     if (!ref || !form.price) { showFlash('Reference code and price are required.'); return }
+    setSaving(true)
+    const src = pendingClient ?? requests.find(r => r.refCode === ref) ?? null
+    const prev = quotes.find(q => q.refCode === (editing ?? ref))
     const entry: QuoteAssignment = {
       refCode: ref,
       tier: form.tier,
       price: parseFloat(form.price),
       note: form.note.trim(),
-      assignedAt: editing ? (quotes[editing]?.assignedAt ?? new Date().toISOString()) : new Date().toISOString(),
+      assignedAt: editing ? (prev?.assignedAt ?? new Date().toISOString()) : new Date().toISOString(),
+      clientName:       src?.name        ?? prev?.clientName,
+      clientEmail:      src?.email       ?? prev?.clientEmail,
+      clientPhone:      src?.phone       ?? prev?.clientPhone,
+      clientAddress:    src?.address     ?? prev?.clientAddress,
+      clientProperty:   src ? `${src.propertyType} — ${src.propertySize}` : prev?.clientProperty,
+      clientStoreys:    src?.storeys     ?? prev?.clientStoreys,
+      clientInspection: src ? `${src.inspectionDate} · ${src.inspectionTime}` : prev?.clientInspection,
+      clientArea:       src?.serviceArea ?? prev?.clientArea,
     }
-    const updated = { ...quotes }
-    if (editing && editing !== ref) delete updated[editing]
-    updated[ref] = entry
-    persist(updated)
-    setForm(EMPTY_FORM)
-    setEditing(null)
-    showFlash(`${ref} ${editing ? 'updated' : 'assigned'} successfully.`)
+    try {
+      await fetch('/api/quote-assignments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry),
+      })
+      setQuotes(prev => {
+        const without = prev.filter(q => q.refCode !== ref && q.refCode !== editing)
+        return [entry, ...without].sort((a, b) =>
+          new Date(b.assignedAt).getTime() - new Date(a.assignedAt).getTime()
+        )
+      })
+      setForm(EMPTY_FORM)
+      setEditing(null)
+      setPendingClient(null)
+      showFlash(`${ref} ${editing ? 'updated' : 'assigned'} successfully.`)
+    } catch {
+      showFlash('Failed to save. Please try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleEdit = (q: QuoteAssignment) => {
@@ -91,24 +117,26 @@ export default function AdminPanel() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const handleDelete = (ref: string) => {
+  const handleDelete = async (ref: string) => {
     if (!window.confirm(`Delete ${ref}?`)) return
-    const updated = { ...quotes }
-    delete updated[ref]
-    persist(updated)
+    await fetch('/api/quote-assignments', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refCode: ref }),
+    })
+    setQuotes(prev => prev.filter(q => q.refCode !== ref))
     showFlash(`${ref} deleted.`)
   }
 
-  const handleCancel = () => { setForm(EMPTY_FORM); setEditing(null) }
+  const handleCancel = () => { setForm(EMPTY_FORM); setEditing(null); setPendingClient(null) }
 
-  // Pre-fill assign form from an incoming request
   const handleAssignFromRequest = (r: QuoteRequest) => {
     setForm({ refCode: r.refCode, tier: 'Essential', price: '', note: '' })
+    setPendingClient(r)
     setEditing(null)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  // Dismiss a request once dealt with
   const handleDismiss = async (refCode: string) => {
     await fetch('/api/quote-requests', {
       method: 'DELETE',
@@ -146,10 +174,6 @@ export default function AdminPanel() {
       </div>
     )
   }
-
-  const sorted = Object.values(quotes).sort((a, b) =>
-    new Date(b.assignedAt).getTime() - new Date(a.assignedAt).getTime()
-  )
 
   return (
     <div className={styles.panel}>
@@ -264,8 +288,8 @@ export default function AdminPanel() {
           </div>
           <div className={styles.formActions}>
             {editing && <button className={styles.cancelBtn} onClick={handleCancel}>Cancel</button>}
-            <button className={styles.assignBtn} onClick={handleAssign}>
-              {editing ? 'Update Quote' : 'Assign Quote'}
+            <button className={styles.assignBtn} onClick={handleAssign} disabled={saving}>
+              {saving ? 'Saving…' : editing ? 'Update Quote' : 'Assign Quote'}
             </button>
           </div>
         </div>
@@ -273,9 +297,9 @@ export default function AdminPanel() {
         {/* ── Assigned list ──────────────────────────────── */}
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>
-            Assigned Quotes <span className={styles.count}>{sorted.length}</span>
+            Assigned Quotes <span className={styles.count}>{quotes.length}</span>
           </h2>
-          {sorted.length === 0 ? (
+          {quotes.length === 0 ? (
             <p className={styles.empty}>No quotes assigned yet.</p>
           ) : (
             <div className={styles.tableWrap}>
@@ -285,31 +309,36 @@ export default function AdminPanel() {
                     <th>Ref Code</th>
                     <th>Tier</th>
                     <th>Price</th>
-                    <th>Note</th>
+                    <th>Client Details</th>
                     <th>Assigned</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {sorted.map(q => {
-                    const req = requests.find(r => r.refCode === q.refCode)
-                    return (
-                      <tr key={q.refCode}>
-                        <td>
-                          <code className={styles.code}>{q.refCode}</code>
-                          {req && <div className={styles.clientName}>{req.name}</div>}
-                        </td>
-                        <td><span className={`${styles.tier} ${styles['tier' + q.tier]}`}>{q.tier}</span></td>
-                        <td>${q.price.toLocaleString()}</td>
-                        <td className={styles.noteCell}>{q.note || '—'}</td>
-                        <td>{new Date(q.assignedAt).toLocaleDateString('en-AU')}</td>
-                        <td className={styles.actions}>
-                          <button className={styles.editBtn} onClick={() => handleEdit(q)}>Edit</button>
-                          <button className={styles.deleteBtn} onClick={() => handleDelete(q.refCode)}>Delete</button>
-                        </td>
-                      </tr>
-                    )
-                  })}
+                  {quotes.map(q => (
+                    <tr key={q.refCode}>
+                      <td>
+                        <code className={styles.code}>{q.refCode}</code>
+                        {q.clientName && <div className={styles.clientName}>{q.clientName}</div>}
+                      </td>
+                      <td><span className={`${styles.tier} ${styles['tier' + q.tier]}`}>{q.tier}</span></td>
+                      <td>${q.price.toLocaleString()}</td>
+                      <td className={styles.noteCell}>
+                        {q.clientEmail    && <div className={styles.clientDetail}>{q.clientEmail}</div>}
+                        {q.clientPhone    && <div className={styles.clientDetail}>{q.clientPhone}</div>}
+                        {q.clientAddress  && <div className={styles.clientDetail}>{q.clientAddress}</div>}
+                        {q.clientProperty && <div className={styles.clientDetail}>{q.clientProperty}{q.clientStoreys ? ` · ${q.clientStoreys}` : ''}</div>}
+                        {q.clientInspection && <div className={styles.clientDetail}>{q.clientInspection}</div>}
+                        {q.note           && <div className={styles.clientNote}>{q.note}</div>}
+                        {!q.clientEmail && !q.clientPhone && !q.clientAddress && !q.note && '—'}
+                      </td>
+                      <td>{new Date(q.assignedAt).toLocaleDateString('en-AU')}</td>
+                      <td className={styles.actions}>
+                        <button className={styles.editBtn} onClick={() => handleEdit(q)}>Edit</button>
+                        <button className={styles.deleteBtn} onClick={() => handleDelete(q.refCode)}>Delete</button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

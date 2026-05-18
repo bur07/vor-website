@@ -85,3 +85,43 @@ export async function deleteRequest(refCode: string) {
   await ecSet('_index', index.filter(r => r !== refCode))
   await ecDel(`req_${refCode}`)
 }
+
+// ── Assignments ────────────────────────────────────────────
+
+export interface QuoteAssignment {
+  refCode: string
+  tier: string
+  price: number
+  note: string
+  assignedAt: string
+  clientName?: string
+  clientEmail?: string
+  clientPhone?: string
+  clientAddress?: string
+  clientProperty?: string
+  clientStoreys?: string
+  clientInspection?: string
+  clientArea?: string
+}
+
+export async function saveAssignment(a: QuoteAssignment) {
+  const index = (await ecGet<string[]>('_assign_index')) ?? []
+  if (!index.includes(a.refCode)) {
+    await ecSet('_assign_index', [...index, a.refCode])
+  }
+  await ecSet(`assign_${a.refCode}`, a)
+}
+
+export async function listAssignments(): Promise<QuoteAssignment[]> {
+  const index = (await ecGet<string[]>('_assign_index')) ?? []
+  if (!index.length) return []
+  const items = await Promise.all(index.map(ref => ecGet<QuoteAssignment>(`assign_${ref}`)))
+  return (items.filter(Boolean) as QuoteAssignment[])
+    .sort((a, b) => new Date(b.assignedAt).getTime() - new Date(a.assignedAt).getTime())
+}
+
+export async function deleteAssignment(refCode: string) {
+  const index = (await ecGet<string[]>('_assign_index')) ?? []
+  await ecSet('_assign_index', index.filter(r => r !== refCode))
+  await ecDel(`assign_${refCode}`)
+}
