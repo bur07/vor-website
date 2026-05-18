@@ -14,7 +14,7 @@ export default function Hero() {
           We don't just clean windows — we reveal a new level of purity and light. For those who take pride in their home, we bring what's unseen into reality — one pane at a time.
         </p>
         <div className={styles.heroBtns}>
-          <Link href="/book" className={styles.btnPrimary}>Book Your Consultation</Link>
+          <Link href="/quote" className={styles.btnPrimary}>Get a Quote</Link>
           <a href="#about" className={styles.btnGhost}>Discover VØR</a>
         </div>
       </div>

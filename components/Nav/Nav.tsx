@@ -9,7 +9,7 @@ const links = [
   { href: '/about', label: 'About' },
   { href: '/services', label: 'Services' },
   { href: '/gallery', label: 'Gallery' },
-  { href: '/book', label: 'Contact' },
+  { href: '/quote', label: 'Get a Quote' },
 ]
 
 export default function Nav() {
@@ -51,7 +51,7 @@ export default function Nav() {
           ))}
         </ul>
 
-        <Link href="/book" className={styles.cta}>Book Now</Link>
+        <Link href="/quote" className={styles.cta}>Book Now</Link>
 
         <button
           className={`${styles.hamburger} ${menuOpen ? styles.open : ''}`}
@@ -74,7 +74,7 @@ export default function Nav() {
             </li>
           ))}
           <li>
-            <Link href="/book" className={styles.overlayCta}>Book Now</Link>
+            <Link href="/quote" className={styles.overlayCta}>Book Now</Link>
           </li>
         </ul>
       </div>

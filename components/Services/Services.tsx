@@ -52,7 +52,7 @@ export default function Services() {
       <div className={styles.grid}>
         {services.map((s, i) => (
           <RevealOnScroll key={s.num} delay={i * 85}>
-            <Link href={`/book?service=${s.slug}`} className={`${styles.card} ${s.featured ? styles.featured : ''}`}>
+            <Link href="/quote" className={`${styles.card} ${s.featured ? styles.featured : ''}`}>
               {s.badge && <div className={styles.badge}>{s.badge}</div>}
               <div className={styles.num}>{s.num}</div>
               <div className={styles.name}>{s.name}</div>
