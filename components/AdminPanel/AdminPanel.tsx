@@ -50,6 +50,7 @@ export default function AdminPanel() {
   const [flash, setFlash]         = useState('')
   const [expanded, setExpanded]   = useState<string | null>(null)
   const [saving, setSaving]       = useState(false)
+  const [refClient, setRefClient] = useState<QuoteRequest | null>(null)
 
   useEffect(() => {
     if (!authed) return
@@ -62,6 +63,16 @@ export default function AdminPanel() {
     })
   }, [authed])
 
+  const fetchRefClient = async (ref: string) => {
+    const r = ref.trim().toUpperCase()
+    if (!r) return
+    try {
+      const res = await fetch(`/api/quote-requests?ref=${encodeURIComponent(r)}`)
+      const data = await res.json()
+      setRefClient(data ?? null)
+    } catch { setRefClient(null) }
+  }
+
   const showFlash = (msg: string) => {
     setFlash(msg)
     setTimeout(() => setFlash(''), 3000)
@@ -71,7 +82,7 @@ export default function AdminPanel() {
     const ref = form.refCode.trim().toUpperCase()
     if (!ref || !form.price) { showFlash('Reference code and price are required.'); return }
     setSaving(true)
-    const src = pendingClient ?? requests.find(r => r.refCode === ref) ?? null
+    const src = pendingClient ?? requests.find(r => r.refCode === ref) ?? refClient ?? null
     const prev = quotes.find(q => q.refCode === (editing ?? ref))
     const entry: QuoteAssignment = {
       refCode: ref,
@@ -128,7 +139,7 @@ export default function AdminPanel() {
     showFlash(`${ref} deleted.`)
   }
 
-  const handleCancel = () => { setForm(EMPTY_FORM); setEditing(null); setPendingClient(null) }
+  const handleCancel = () => { setForm(EMPTY_FORM); setEditing(null); setPendingClient(null); setRefClient(null) }
 
   const handleAssignFromRequest = (r: QuoteRequest) => {
     setForm({ refCode: r.refCode, tier: 'Essential', price: '', note: '' })
@@ -258,7 +269,8 @@ export default function AdminPanel() {
               <input
                 placeholder="VOR-XXXX"
                 value={form.refCode}
-                onChange={e => setForm(f => ({ ...f, refCode: e.target.value.toUpperCase() }))}
+                onChange={e => { setForm(f => ({ ...f, refCode: e.target.value.toUpperCase() })); setRefClient(null) }}
+                onBlur={e => { if (!editing) void fetchRefClient(e.target.value) }}
                 disabled={!!editing}
               />
             </div>

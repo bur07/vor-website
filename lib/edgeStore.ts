@@ -64,6 +64,10 @@ export interface QuoteRequest {
   submittedAt: string
 }
 
+export async function getRequest(refCode: string): Promise<QuoteRequest | null> {
+  return ecGet<QuoteRequest>(`req_${refCode}`)
+}
+
 export async function saveRequest(req: QuoteRequest) {
   const index = (await ecGet<string[]>('_index')) ?? []
   if (!index.includes(req.refCode)) {
