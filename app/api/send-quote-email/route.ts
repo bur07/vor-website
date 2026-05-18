@@ -1,6 +1,7 @@
 // Next.js API route — mirrors netlify/functions/send-quote-email.js for Vercel deployments
 import { Resend } from 'resend'
 import { saveRequest } from '@/lib/edgeStore'
+import { sendQuoteRequestSms } from '@/lib/twilio'
 
 const FROM = 'VØR Window Co. <info@vorwindowco.com>'
 const BUSINESS_EMAIL = 'info@vorwindowco.com'
@@ -146,7 +147,7 @@ export async function POST(req: Request) {
       resend.emails.send({ from: FROM, to: clientEmail, replyTo: replyToClient, ...client }),
     ])
 
-    // Persist quote request so admin panel can display client info
+    // Persist quote request so admin panel can display client info + send SMS
     if (d.type === 'quote') {
       try {
         await saveRequest({
@@ -166,6 +167,11 @@ export async function POST(req: Request) {
         })
       } catch {
         // Edge Config not ready — emails still sent
+      }
+      try {
+        await sendQuoteRequestSms({ name: d.name, phone: d.phone, refCode: d.refCode, address: d.address })
+      } catch {
+        // SMS best-effort
       }
     }
 

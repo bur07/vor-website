@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import { Resend } from 'resend'
+import { sendBookingConfirmedSms } from '@/lib/twilio'
 
 const FROM = 'VØR Window Co. <info@vorwindowco.com>'
 const BUSINESS_EMAIL = 'info@vorwindowco.com'
@@ -116,10 +117,20 @@ export async function POST(req: Request) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
     if (session.payment_status === 'paid' && session.metadata) {
+      const m = session.metadata as Record<string, string>
       try {
-        await sendBookingEmails(session.metadata as Record<string, string>, session.payment_intent as string)
+        await sendBookingEmails(m, session.payment_intent as string)
       } catch (err) {
         console.error('Webhook email error:', err)
+      }
+      try {
+        await sendBookingConfirmedSms({
+          name: m.name, phone: m.phone, refCode: m.refCode,
+          tier: m.tier, date: m.date, time: m.time,
+          amountPaid: m.amountPaid, balanceDue: m.balanceDue,
+        })
+      } catch (err) {
+        console.error('Webhook SMS error:', err)
       }
     }
   }
