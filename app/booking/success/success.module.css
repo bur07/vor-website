@@ -1,0 +1,97 @@
+.main {
+  min-height: 100vh;
+  background: var(--blue-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 1.5rem 5rem;
+}
+
+.card {
+  background: rgba(250,246,238,0.04);
+  border: 0.5px solid rgba(126,179,224,0.13);
+  padding: 4rem 3rem;
+  text-align: center;
+  max-width: 560px;
+  width: 100%;
+}
+
+.icon {
+  width: 56px; height: 56px;
+  border: 0.5px solid rgba(126,179,224,0.35);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 2rem;
+}
+.icon svg { width: 22px; height: 22px; stroke: var(--blue-baby); }
+
+.title {
+  font-family: var(--font-cormorant),'Cormorant Garamond',serif;
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: var(--cream);
+  margin-bottom: 0.9rem;
+  letter-spacing: 0.04em;
+}
+
+.sub {
+  font-family: var(--font-jost),'Jost',sans-serif;
+  font-size: 0.84rem;
+  color: rgba(250,246,238,0.5);
+  line-height: 1.8;
+  margin: 0 0 2rem;
+}
+.sub strong { color: rgba(250,246,238,0.72); font-weight: 400; }
+
+.refBadge {
+  background: #c9a84c;
+  padding: 1.4rem 2rem;
+  margin: 0 auto 2rem;
+  max-width: 320px;
+}
+.refLabel {
+  font-family: var(--font-jost),'Jost',sans-serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 0.5rem;
+}
+.refCode {
+  font-family: Georgia, serif;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #fff;
+}
+
+.table {
+  border: 0.5px solid rgba(126,179,224,0.12);
+  margin: 0 auto 2rem;
+  text-align: left;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.2rem;
+  border-bottom: 0.5px solid rgba(250,246,238,0.05);
+  font-family: var(--font-jost),'Jost',sans-serif;
+  font-size: 0.8rem;
+}
+.row:last-child { border-bottom: none; }
+.row span { color: rgba(250,246,238,0.42); }
+.row strong { color: var(--cream); font-weight: 400; }
+
+.contact {
+  font-family: var(--font-jost),'Jost',sans-serif;
+  font-size: 0.78rem;
+  color: rgba(250,246,238,0.3);
+  line-height: 1.8;
+  margin: 0;
+}
+.contact a { color: var(--blue-baby); text-decoration: none; }
+.contact a:hover { text-decoration: underline; }
+
+@media(max-width:600px) {
+  .card { padding: 3rem 1.4rem; }
+}

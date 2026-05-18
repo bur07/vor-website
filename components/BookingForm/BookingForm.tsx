@@ -94,11 +94,10 @@ export default function BookingForm() {
     setErrors({})
     setStatus('loading')
     try {
-      const res = await fetch('/api/send-quote-email', {
+      const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: 'booking',
           refCode:     assignment!.refCode,
           tier:        assignment!.tier,
           price:       assignment!.price,
@@ -109,34 +108,12 @@ export default function BookingForm() {
           ...client,
         }),
       })
-      if (!res.ok) throw new Error()
-      setStatus('success')
+      const data = await res.json()
+      if (!res.ok || !data.url) throw new Error(data.error ?? 'No checkout URL')
+      window.location.href = data.url
     } catch {
       setStatus('error')
     }
-  }
-
-  if (status === 'success') {
-    return (
-      <div className={styles.success}>
-        <div className={styles.successIcon}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/>
-          </svg>
-        </div>
-        <div className={styles.successTitle}>Booking Confirmed</div>
-        <p className={styles.successSub}>
-          A confirmation has been sent to {client.email}. Noah will be in touch to finalise your appointment time.
-        </p>
-        <div className={styles.summaryBox}>
-          <div className={styles.summaryRow}><span>Reference</span><strong>{assignment!.refCode}</strong></div>
-          <div className={styles.summaryRow}><span>Service</span><strong>{assignment!.tier}</strong></div>
-          <div className={styles.summaryRow}><span>Date</span><strong>{client.date}</strong></div>
-          <div className={styles.summaryRow}><span>Amount Paid</span><strong>${amountPaid} AUD</strong></div>
-          {balanceDue > 0 && <div className={styles.summaryRow}><span>Balance on Day</span><strong>${balanceDue} AUD</strong></div>}
-        </div>
-      </div>
-    )
   }
 
   const today = new Date().toISOString().split('T')[0]
