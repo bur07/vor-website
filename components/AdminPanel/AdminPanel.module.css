@@ -265,6 +265,7 @@
 .editBtn:hover { color: var(--blue-baby); border-color: var(--blue-baby); }
 .deleteBtn { color: rgba(248,113,113,0.6); border-color: rgba(248,113,113,0.2); }
 .deleteBtn:hover { color: #f87171; border-color: #f87171; }
+.deleteBtnConfirm { color: #fff; background: #f87171; border-color: #f87171; }
 
 /* ─── Incoming Requests ─────────────────────────────────── */
 .requestList { display: flex; flex-direction: column; gap: 0; }

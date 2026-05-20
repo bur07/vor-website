@@ -51,6 +51,7 @@ export default function AdminPanel() {
   const [expanded, setExpanded]   = useState<string | null>(null)
   const [saving, setSaving]       = useState(false)
   const [refClient, setRefClient] = useState<QuoteRequest | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
   useEffect(() => {
     if (!authed) return
@@ -148,7 +149,8 @@ export default function AdminPanel() {
   }
 
   const handleDelete = async (ref: string) => {
-    if (!window.confirm(`Delete ${ref}?`)) return
+    if (confirmDelete !== ref) { setConfirmDelete(ref); return }
+    setConfirmDelete(null)
     try {
       const res = await fetch('/api/quote-assignments', {
         method: 'DELETE',
@@ -158,8 +160,8 @@ export default function AdminPanel() {
       if (!res.ok) throw new Error(await res.text())
       setQuotes(prev => prev.filter(q => q.refCode !== ref))
       showFlash(`${ref} deleted.`)
-    } catch {
-      showFlash(`Failed to delete ${ref}. Please try again.`)
+    } catch (err) {
+      showFlash(`Delete failed: ${err instanceof Error ? err.message : 'please try again'}`)
     }
   }
 
@@ -370,8 +372,14 @@ export default function AdminPanel() {
                       </td>
                       <td>{new Date(q.assignedAt).toLocaleDateString('en-AU')}</td>
                       <td className={styles.actions}>
-                        <button className={styles.editBtn} onClick={() => handleEdit(q)}>Edit</button>
-                        <button className={styles.deleteBtn} onClick={() => handleDelete(q.refCode)}>Delete</button>
+                        <button className={styles.editBtn} onClick={() => { setConfirmDelete(null); handleEdit(q) }}>Edit</button>
+                        <button
+                          className={confirmDelete === q.refCode ? styles.deleteBtnConfirm : styles.deleteBtn}
+                          onClick={() => handleDelete(q.refCode)}
+                          onBlur={() => setConfirmDelete(null)}
+                        >
+                          {confirmDelete === q.refCode ? 'Confirm?' : 'Delete'}
+                        </button>
                       </td>
                     </tr>
                   ))}
