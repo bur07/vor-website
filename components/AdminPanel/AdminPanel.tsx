@@ -36,7 +36,7 @@ interface QuoteAssignment {
 }
 
 const TIERS = ['Essential', 'Signature', 'Prestige']
-const EMPTY_FORM = { refCode: '', tier: 'Essential', price: '', note: '' }
+const EMPTY_FORM = { refCode: '', tier: 'Essential', price: '', note: '', clientName: '', clientEmail: '', clientPhone: '', clientAddress: '' }
 
 export default function AdminPanel() {
   const [authed, setAuthed]       = useState(false)
@@ -71,6 +71,15 @@ export default function AdminPanel() {
       const res = await fetch(`/api/quote-requests?ref=${encodeURIComponent(r)}`)
       const data = await res.json()
       setRefClient(data ?? null)
+      if (data) {
+        setForm(f => ({
+          ...f,
+          clientName:    f.clientName    || data.name    || '',
+          clientEmail:   f.clientEmail   || data.email   || '',
+          clientPhone:   f.clientPhone   || data.phone   || '',
+          clientAddress: f.clientAddress || data.address || '',
+        }))
+      }
     } catch { setRefClient(null) }
   }
 
@@ -99,10 +108,11 @@ export default function AdminPanel() {
       price: parseFloat(form.price),
       note: form.note.trim(),
       assignedAt: editing ? (prev?.assignedAt ?? new Date().toISOString()) : new Date().toISOString(),
-      clientName:       src?.name        ?? prev?.clientName,
-      clientEmail:      src?.email       ?? prev?.clientEmail,
-      clientPhone:      src?.phone       ?? prev?.clientPhone,
-      clientAddress:    src?.address     ?? prev?.clientAddress,
+      // Form fields take priority, then auto-fetched src, then previous assignment
+      clientName:       form.clientName    || src?.name        || prev?.clientName,
+      clientEmail:      form.clientEmail   || src?.email       || prev?.clientEmail,
+      clientPhone:      form.clientPhone   || src?.phone       || prev?.clientPhone,
+      clientAddress:    form.clientAddress || src?.address     || prev?.clientAddress,
       clientProperty:   src ? `${src.propertyType} — ${src.propertySize}` : prev?.clientProperty,
       clientStoreys:    src?.storeys     ?? prev?.clientStoreys,
       clientInspection: src ? `${src.inspectionDate} · ${src.inspectionTime}` : prev?.clientInspection,
@@ -143,7 +153,11 @@ export default function AdminPanel() {
   }
 
   const handleEdit = (q: QuoteAssignment) => {
-    setForm({ refCode: q.refCode, tier: q.tier, price: String(q.price), note: q.note })
+    setForm({
+      refCode: q.refCode, tier: q.tier, price: String(q.price), note: q.note,
+      clientName: q.clientName ?? '', clientEmail: q.clientEmail ?? '',
+      clientPhone: q.clientPhone ?? '', clientAddress: q.clientAddress ?? '',
+    })
     setEditing(q.refCode)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -168,7 +182,11 @@ export default function AdminPanel() {
   const handleCancel = () => { setForm(EMPTY_FORM); setEditing(null); setPendingClient(null); setRefClient(null) }
 
   const handleAssignFromRequest = (r: QuoteRequest) => {
-    setForm({ refCode: r.refCode, tier: 'Essential', price: '', note: '' })
+    setForm({
+      refCode: r.refCode, tier: 'Essential', price: '', note: '',
+      clientName: r.name, clientEmail: r.email,
+      clientPhone: r.phone, clientAddress: r.address,
+    })
     setPendingClient(r)
     setEditing(null)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -321,6 +339,39 @@ export default function AdminPanel() {
                 placeholder="Includes frames & tracks..."
                 value={form.note}
                 onChange={e => setForm(f => ({ ...f, note: e.target.value }))}
+              />
+            </div>
+            <hr className={styles.formDivider} />
+            <div className={styles.field}>
+              <label>Client Name</label>
+              <input
+                placeholder="Auto-filled from request"
+                value={form.clientName}
+                onChange={e => setForm(f => ({ ...f, clientName: e.target.value }))}
+              />
+            </div>
+            <div className={styles.field}>
+              <label>Client Email</label>
+              <input
+                placeholder="Auto-filled from request"
+                value={form.clientEmail}
+                onChange={e => setForm(f => ({ ...f, clientEmail: e.target.value }))}
+              />
+            </div>
+            <div className={styles.field}>
+              <label>Client Phone</label>
+              <input
+                placeholder="Auto-filled from request"
+                value={form.clientPhone}
+                onChange={e => setForm(f => ({ ...f, clientPhone: e.target.value }))}
+              />
+            </div>
+            <div className={styles.field}>
+              <label>Client Address</label>
+              <input
+                placeholder="Auto-filled from request"
+                value={form.clientAddress}
+                onChange={e => setForm(f => ({ ...f, clientAddress: e.target.value }))}
               />
             </div>
           </div>

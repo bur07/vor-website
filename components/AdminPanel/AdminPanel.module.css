@@ -156,6 +156,7 @@
 
 /* ─── Form ──────────────────────────────────────────────── */
 .formGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem; }
+.formDivider { grid-column: 1 / -1; border: none; border-top: 0.5px solid rgba(126,179,224,0.1); margin: 0.4rem 0; }
 .field { display: flex; flex-direction: column; gap: 0.45rem; }
 .field label {
   font-family: var(--font-jost),'Jost',sans-serif;
