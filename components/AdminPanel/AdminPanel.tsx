@@ -108,20 +108,31 @@ export default function AdminPanel() {
       clientArea:       src?.serviceArea ?? prev?.clientArea,
     }
     try {
-      await fetch('/api/quote-assignments', {
+      const saveRes = await fetch('/api/quote-assignments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(entry),
       })
+      if (!saveRes.ok) throw new Error(await saveRes.text())
       setQuotes(prev => {
         const without = prev.filter(q => q.refCode !== ref && q.refCode !== editing)
         return [entry, ...without].sort((a, b) =>
           new Date(b.assignedAt).getTime() - new Date(a.assignedAt).getTime()
         )
       })
+      // Auto-dismiss the incoming request if one matched
+      if (src && requests.find(r => r.refCode === ref)) {
+        await fetch('/api/quote-requests', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refCode: ref }),
+        })
+        setRequests(prev => prev.filter(r => r.refCode !== ref))
+      }
       setForm(EMPTY_FORM)
       setEditing(null)
       setPendingClient(null)
+      setRefClient(null)
       showFlash(`${ref} ${editing ? 'updated' : 'assigned'} successfully.`)
     } catch {
       showFlash('Failed to save. Please try again.')
@@ -138,13 +149,18 @@ export default function AdminPanel() {
 
   const handleDelete = async (ref: string) => {
     if (!window.confirm(`Delete ${ref}?`)) return
-    await fetch('/api/quote-assignments', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refCode: ref }),
-    })
-    setQuotes(prev => prev.filter(q => q.refCode !== ref))
-    showFlash(`${ref} deleted.`)
+    try {
+      const res = await fetch('/api/quote-assignments', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refCode: ref }),
+      })
+      if (!res.ok) throw new Error(await res.text())
+      setQuotes(prev => prev.filter(q => q.refCode !== ref))
+      showFlash(`${ref} deleted.`)
+    } catch {
+      showFlash(`Failed to delete ${ref}. Please try again.`)
+    }
   }
 
   const handleCancel = () => { setForm(EMPTY_FORM); setEditing(null); setPendingClient(null); setRefClient(null) }

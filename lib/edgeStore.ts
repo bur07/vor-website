@@ -24,26 +24,20 @@ async function ecGet<T>(key: string): Promise<T | null> {
   } catch { return null }
 }
 
-async function ecSet(key: string, value: unknown) {
-  await fetch(WRITE_URL, {
+// Single atomic PATCH — index update + item upsert/delete in one request
+async function ecPatch(items: { operation: 'upsert' | 'delete'; key: string; value?: unknown }[]) {
+  const res = await fetch(WRITE_URL, {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${API_TOKEN}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ items: [{ operation: 'upsert', key, value }] }),
+    body: JSON.stringify({ items }),
   })
-}
-
-async function ecDel(key: string) {
-  await fetch(WRITE_URL, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${API_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ items: [{ operation: 'delete', key }] }),
-  })
+  if (!res.ok) {
+    const text = await res.text().catch(() => res.status.toString())
+    throw new Error(`Edge Config write failed (${res.status}): ${text}`)
+  }
 }
 
 // ── public API ─────────────────────────────────────────────
@@ -70,10 +64,11 @@ export async function getRequest(refCode: string): Promise<QuoteRequest | null> 
 
 export async function saveRequest(req: QuoteRequest) {
   const index = (await ecGet<string[]>('_index')) ?? []
-  if (!index.includes(req.refCode)) {
-    await ecSet('_index', [...index, req.refCode])
-  }
-  await ecSet(`req_${req.refCode}`, req)
+  const newIndex = index.includes(req.refCode) ? index : [...index, req.refCode]
+  await ecPatch([
+    { operation: 'upsert', key: '_index',              value: newIndex },
+    { operation: 'upsert', key: `req_${req.refCode}`,  value: req },
+  ])
 }
 
 export async function listRequests(): Promise<QuoteRequest[]> {
@@ -86,8 +81,10 @@ export async function listRequests(): Promise<QuoteRequest[]> {
 
 export async function deleteRequest(refCode: string) {
   const index = (await ecGet<string[]>('_index')) ?? []
-  await ecSet('_index', index.filter(r => r !== refCode))
-  await ecDel(`req_${refCode}`)
+  await ecPatch([
+    { operation: 'upsert', key: '_index',             value: index.filter(r => r !== refCode) },
+    { operation: 'delete', key: `req_${refCode}` },
+  ])
 }
 
 // ── Assignments ────────────────────────────────────────────
@@ -110,10 +107,11 @@ export interface QuoteAssignment {
 
 export async function saveAssignment(a: QuoteAssignment) {
   const index = (await ecGet<string[]>('_assign_index')) ?? []
-  if (!index.includes(a.refCode)) {
-    await ecSet('_assign_index', [...index, a.refCode])
-  }
-  await ecSet(`assign_${a.refCode}`, a)
+  const newIndex = index.includes(a.refCode) ? index : [...index, a.refCode]
+  await ecPatch([
+    { operation: 'upsert', key: '_assign_index',        value: newIndex },
+    { operation: 'upsert', key: `assign_${a.refCode}`,  value: a },
+  ])
 }
 
 export async function getAssignment(refCode: string): Promise<QuoteAssignment | null> {
@@ -130,6 +128,8 @@ export async function listAssignments(): Promise<QuoteAssignment[]> {
 
 export async function deleteAssignment(refCode: string) {
   const index = (await ecGet<string[]>('_assign_index')) ?? []
-  await ecSet('_assign_index', index.filter(r => r !== refCode))
-  await ecDel(`assign_${refCode}`)
+  await ecPatch([
+    { operation: 'upsert', key: '_assign_index',       value: index.filter(r => r !== refCode) },
+    { operation: 'delete', key: `assign_${refCode}` },
+  ])
 }
