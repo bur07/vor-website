@@ -20,8 +20,9 @@ export async function POST(req: Request) {
     const assignment = await req.json()
     await saveAssignment(assignment)
     return Response.json({ ok: true })
-  } catch {
-    return Response.json({ error: 'Failed' }, { status: 500 })
+  } catch (err) {
+    console.error('saveAssignment error:', err)
+    return Response.json({ error: String(err) }, { status: 500 })
   }
 }
 
@@ -30,7 +31,8 @@ export async function DELETE(req: Request) {
     const { refCode } = await req.json()
     await deleteAssignment(refCode)
     return Response.json({ ok: true })
-  } catch {
-    return Response.json({ error: 'Failed' }, { status: 500 })
+  } catch (err) {
+    console.error('deleteAssignment error:', err)
+    return Response.json({ error: String(err) }, { status: 500 })
   }
 }

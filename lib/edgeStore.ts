@@ -82,8 +82,7 @@ export async function listRequests(): Promise<QuoteRequest[]> {
 export async function deleteRequest(refCode: string) {
   const index = (await ecGet<string[]>('_index')) ?? []
   await ecPatch([
-    { operation: 'upsert', key: '_index',             value: index.filter(r => r !== refCode) },
-    { operation: 'delete', key: `req_${refCode}` },
+    { operation: 'upsert', key: '_index', value: index.filter(r => r !== refCode) },
   ])
 }
 
@@ -129,7 +128,6 @@ export async function listAssignments(): Promise<QuoteAssignment[]> {
 export async function deleteAssignment(refCode: string) {
   const index = (await ecGet<string[]>('_assign_index')) ?? []
   await ecPatch([
-    { operation: 'upsert', key: '_assign_index',       value: index.filter(r => r !== refCode) },
-    { operation: 'delete', key: `assign_${refCode}` },
+    { operation: 'upsert', key: '_assign_index', value: index.filter(r => r !== refCode) },
   ])
 }
