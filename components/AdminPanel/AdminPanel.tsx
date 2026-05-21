@@ -235,6 +235,7 @@ export default function AdminPanel() {
       <div className={styles.header}>
         <div className={styles.headerLogo}>VØR<span>.</span></div>
         <div className={styles.headerSub}>Quote Admin</div>
+        <a href="/admin/confirm" className={styles.logoutBtn} style={{ textDecoration: 'none' }}>Send Confirmation</a>
         <button className={styles.logoutBtn} onClick={() => setAuthed(false)}>Sign out</button>
       </div>
 
