@@ -50,7 +50,7 @@ export default function ConfirmBooking() {
       const data = await res.json()
       if (!data) { setLookupErr('No assigned quote found for this reference.'); setLooking(false); return }
       setAssignment(data)
-      setAmountPaid(payType === '20% Deposit' ? String(deposit) : String(data.price))
+      setAmountPaid(String(data.price))
       setStep('form')
     } catch {
       setLookupErr('Lookup failed — please try again.')
@@ -68,9 +68,10 @@ export default function ConfirmBooking() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           refCode:     assignment!.refCode,
-          name:        assignment!.clientName  ?? '',
-          email:       assignment!.clientEmail ?? '',
-          phone:       assignment!.clientPhone ?? '',
+          name:        assignment!.clientName    ?? '',
+          email:       assignment!.clientEmail   ?? '',
+          phone:       assignment!.clientPhone   ?? '',
+          address:     assignment!.clientAddress ?? '',
           tier:        assignment!.tier,
           price:       assignment!.price,
           note:        assignment!.note,
@@ -181,8 +182,9 @@ export default function ConfirmBooking() {
                 <div className={styles.clientRef}>{assignment.refCode}</div>
                 <div className={styles.clientName}>{assignment.clientName || '—'}</div>
                 <div className={styles.clientMeta}>
-                  {assignment.clientEmail && <span>{assignment.clientEmail}</span>}
-                  {assignment.clientPhone && <span>{assignment.clientPhone}</span>}
+                  {assignment.clientEmail   && <span>{assignment.clientEmail}</span>}
+                  {assignment.clientPhone   && <span>{assignment.clientPhone}</span>}
+                  {assignment.clientAddress && <span>{assignment.clientAddress}</span>}
                 </div>
                 <div className={styles.clientService}>
                   <span className={styles.tierBadge}>{assignment.tier}</span>
@@ -218,7 +220,8 @@ export default function ConfirmBooking() {
                     className={`${styles.payOption} ${payType === p ? styles.paySelected : ''}`}
                     onClick={() => {
                       setPayType(p)
-                      setAmountPaid(p === '20% Deposit' ? String(deposit) : String(assignment.price))
+                      // Only suggest a default if nothing has been typed yet
+                      setAmountPaid(prev => prev || (p === '20% Deposit' ? String(deposit) : String(assignment.price)))
                     }}
                   >{p}</button>
                 ))}

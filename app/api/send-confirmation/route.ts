@@ -14,7 +14,7 @@ function row(label: string, value: string) {
 export async function POST(req: Request) {
   try {
     const d = await req.json()
-    const { refCode, name, email, phone, tier, price, paymentType, amountPaid, balanceDue, date, time, note } = d
+    const { refCode, name, email, phone, address, tier, price, paymentType, amountPaid, balanceDue, date, time, note } = d
 
     if (!refCode || !name || !email) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 })
@@ -36,6 +36,7 @@ export async function POST(req: Request) {
         </div>
         <div style="border-left:3px solid #c9a84c;margin:0 0 24px">
           <table style="width:100%;border-collapse:collapse">
+            ${address ? row('Property', address) : ''}
             ${row('Service', tier)}
             ${row('Appointment', `${date} · ${time}`)}
             ${row('Total Price', `$${price} AUD`)}
@@ -65,6 +66,7 @@ export async function POST(req: Request) {
         <tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296;width:38%">Reference</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30"><strong>${refCode}</strong></td></tr>
         <tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296">Name</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30">${name}</td></tr>
         <tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296">Email</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30">${email}</td></tr>
+        ${address ? `<tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296">Address</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30">${address}</td></tr>` : ''}
         <tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296">Tier</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30">${tier}</td></tr>
         <tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296">Date</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30">${date} · ${time}</td></tr>
         <tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296">Payment</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30">${paymentType} — $${amountPaid} AUD paid</td></tr>
