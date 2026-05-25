@@ -102,6 +102,9 @@ export interface QuoteAssignment {
   clientStoreys?: string
   clientInspection?: string
   clientArea?: string
+  paidAt?: string
+  amountPaid?: number
+  paymentType?: string
 }
 
 export async function saveAssignment(a: QuoteAssignment) {

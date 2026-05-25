@@ -1,6 +1,7 @@
 import Stripe from 'stripe'
 import { Resend } from 'resend'
 import { sendBookingConfirmedSms } from '@/lib/twilio'
+import { getAssignment, saveAssignment } from '@/lib/edgeStore'
 
 const FROM = 'VØR Window Co. <info@vorwindowco.com>'
 const BUSINESS_EMAIL = 'info@vorwindowco.com'
@@ -131,6 +132,19 @@ export async function POST(req: Request) {
         })
       } catch (err) {
         console.error('Webhook SMS error:', err)
+      }
+      try {
+        const existing = await getAssignment(m.refCode)
+        if (existing) {
+          await saveAssignment({
+            ...existing,
+            paidAt: new Date().toISOString(),
+            amountPaid: parseFloat(m.amountPaid),
+            paymentType: m.paymentType,
+          })
+        }
+      } catch (err) {
+        console.error('Webhook assignment update error:', err)
       }
     }
   }

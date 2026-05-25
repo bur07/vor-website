@@ -33,6 +33,9 @@ interface QuoteAssignment {
   clientStoreys?: string
   clientInspection?: string
   clientArea?: string
+  paidAt?: string
+  amountPaid?: number
+  paymentType?: string
 }
 
 const TIERS = ['Essential', 'Signature', 'Prestige']
@@ -412,7 +415,14 @@ export default function AdminPanel() {
                         {q.clientName && <div className={styles.clientName}>{q.clientName}</div>}
                       </td>
                       <td><span className={`${styles.tier} ${styles['tier' + q.tier]}`}>{q.tier}</span></td>
-                      <td>${q.price.toLocaleString()}</td>
+                      <td>
+                        <div>${q.price.toLocaleString()}</div>
+                        {q.paidAt && (
+                          <div className={styles.paidBadge}>
+                            PAID ${q.amountPaid?.toLocaleString()}
+                          </div>
+                        )}
+                      </td>
                       <td className={styles.noteCell}>
                         {q.clientEmail    && <div className={styles.clientDetail}>{q.clientEmail}</div>}
                         {q.clientPhone    && <div className={styles.clientDetail}>{q.clientPhone}</div>}
