@@ -2,7 +2,7 @@ import Stripe from 'stripe'
 import { Resend } from 'resend'
 import { sendBookingConfirmedSms } from '@/lib/twilio'
 import { getAssignment, saveAssignment } from '@/lib/edgeStore'
-import { addToCalendar } from '@/lib/googleCalendar'
+import { buildIcs } from '@/lib/googleCalendar'
 
 const FROM = 'VØR Window Co. <info@vorwindowco.com>'
 const BUSINESS_EMAIL = 'info@vorwindowco.com'
@@ -85,11 +85,20 @@ async function sendBookingEmails(m: Record<string, string>, paymentId: string) {
     </div>
   </div>`
 
+  const icsAttachment = {
+    filename: `${m.refCode}.ics`,
+    content: Buffer.from(buildIcs({
+      refCode: m.refCode, name: m.name, address: m.address ?? '',
+      tier: m.tier, price: m.price, date: m.date, time: m.time, note: m.note,
+    })).toString('base64'),
+  }
+
   await Promise.all([
     resend.emails.send({
       from: FROM, to: BUSINESS_EMAIL, replyTo: m.email,
       subject: `[${m.refCode}] New booking — ${m.name} · ${m.tier} — PAID`,
       html: bizHtml,
+      attachments: [icsAttachment],
     }),
     resend.emails.send({
       from: FROM, to: m.email, replyTo: BUSINESS_EMAIL,
@@ -147,10 +156,6 @@ export async function POST(req: Request) {
       } catch (err) {
         console.error('Webhook assignment update error:', err)
       }
-      addToCalendar({
-        refCode: m.refCode, name: m.name, address: m.address ?? '',
-        tier: m.tier, price: m.price, date: m.date, time: m.time, note: m.note,
-      }).catch(() => {})
     }
   }
 

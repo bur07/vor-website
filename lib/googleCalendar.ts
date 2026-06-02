@@ -1,15 +1,3 @@
-import { google } from 'googleapis'
-
-function getAuth() {
-  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
-  if (!raw) return null
-  const key = JSON.parse(raw)
-  return new google.auth.GoogleAuth({
-    credentials: key,
-    scopes: ['https://www.googleapis.com/auth/calendar'],
-  })
-}
-
 export interface CalendarEvent {
   refCode: string
   name: string
@@ -21,50 +9,56 @@ export interface CalendarEvent {
   note?: string
 }
 
-function parseDateTime(date: string, time: string): { start: string; end: string } {
-  // time is like "10:00am" or "2:00pm"
+function parseTime(time: string): { hour: number; min: number } {
   const match = time.match(/^(\d+):(\d+)(am|pm)$/i)
-  if (!match) {
-    // Fallback: all-day event
-    return { start: date, end: date }
-  }
+  if (!match) return { hour: 9, min: 0 }
   let hour = parseInt(match[1])
   const min  = parseInt(match[2])
   const ampm = match[3].toLowerCase()
   if (ampm === 'pm' && hour !== 12) hour += 12
   if (ampm === 'am' && hour === 12) hour = 0
+  return { hour, min }
+}
+
+function toIcsDate(date: string, hour: number, min: number): string {
+  // Returns local datetime string without timezone (floating) for Sydney time
+  const [y, m, d] = date.split('-')
   const pad = (n: number) => String(n).padStart(2, '0')
-  const startIso = `${date}T${pad(hour)}:${pad(min)}:00`
-  const endIso   = `${date}T${pad(hour + 2)}:${pad(min)}:00`
-  return { start: startIso, end: endIso }
+  return `${y}${m}${d}T${pad(hour)}${pad(min)}00`
 }
 
-export async function addToCalendar(event: CalendarEvent): Promise<void> {
-  const auth = getAuth()
-  if (!auth) return
+export function buildIcs(event: CalendarEvent): string {
+  const { hour, min } = parseTime(event.time)
+  const start = toIcsDate(event.date, hour, min)
+  const end   = toIcsDate(event.date, hour + 2, min)
+  const now   = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
 
-  const calendarId = process.env.GOOGLE_CALENDAR_ID ?? 'primary'
-  const calendar = google.calendar({ version: 'v3', auth })
-  const { start, end } = parseDateTime(event.date, event.time)
+  const description = [
+    `Ref: ${event.refCode}`,
+    `Client: ${event.name}`,
+    `Service: ${event.tier}`,
+    `Price: $${event.price} AUD`,
+    event.note ? `Note: ${event.note}` : '',
+  ].filter(Boolean).join('\\n')
 
-  const isAllDay = !start.includes('T')
-
-  await calendar.events.insert({
-    calendarId,
-    requestBody: {
-      summary: `[${event.refCode}] ${event.name} — ${event.tier}`,
-      location: event.address || undefined,
-      description: [
-        `Ref: ${event.refCode}`,
-        `Client: ${event.name}`,
-        `Service: ${event.tier}`,
-        `Price: $${event.price} AUD`,
-        event.note ? `Note: ${event.note}` : '',
-      ].filter(Boolean).join('\n'),
-      ...(isAllDay
-        ? { start: { date: start }, end: { date: end } }
-        : { start: { dateTime: start, timeZone: 'Australia/Sydney' }, end: { dateTime: end, timeZone: 'Australia/Sydney' } }
-      ),
-    },
-  })
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//VOR Window Co//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:${event.refCode}@vorwindowco.com`,
+    `DTSTAMP:${now}`,
+    `DTSTART;TZID=Australia/Sydney:${start}`,
+    `DTEND;TZID=Australia/Sydney:${end}`,
+    `SUMMARY:[${event.refCode}] ${event.name} — ${event.tier}`,
+    event.address ? `LOCATION:${event.address}` : '',
+    `DESCRIPTION:${description}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].filter(Boolean).join('\r\n')
 }
+
+// No-op kept so callers don't need changing — ics is attached to emails directly
+export async function addToCalendar(_event: CalendarEvent): Promise<void> {}

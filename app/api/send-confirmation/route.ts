@@ -1,6 +1,6 @@
 import { Resend } from 'resend'
 import { sendBookingConfirmedSms } from '@/lib/twilio'
-import { addToCalendar } from '@/lib/googleCalendar'
+import { buildIcs } from '@/lib/googleCalendar'
 
 const FROM = 'VØR Window Co. <info@vorwindowco.com>'
 const BUSINESS_EMAIL = 'info@vorwindowco.com'
@@ -76,10 +76,15 @@ export async function POST(req: Request) {
       </div>
     </div>`
 
+    const icsAttachment = {
+      filename: `${refCode}.ics`,
+      content: Buffer.from(buildIcs({ refCode, name, address, tier, price, date, time, note })).toString('base64'),
+    }
+
     const sends: Promise<unknown>[] = []
+    const resend = new Resend(process.env.RESEND_API_KEY)
 
     if (email) {
-      const resend = new Resend(process.env.RESEND_API_KEY)
       sends.push(
         resend.emails.send({
           from: FROM, to: email, replyTo: BUSINESS_EMAIL,
@@ -90,16 +95,16 @@ export async function POST(req: Request) {
           from: FROM, to: BUSINESS_EMAIL, replyTo: email,
           subject: `[${refCode}] Booking confirmed (manual) — ${name}`,
           html: bizHtml,
+          attachments: [icsAttachment],
         }),
       )
     } else {
-      // No client email — still notify the business without a replyTo
-      const resend = new Resend(process.env.RESEND_API_KEY)
       sends.push(
         resend.emails.send({
           from: FROM, to: BUSINESS_EMAIL,
           subject: `[${refCode}] Booking confirmed (manual) — ${name}`,
           html: bizHtml,
+          attachments: [icsAttachment],
         }),
       )
     }
@@ -112,8 +117,6 @@ export async function POST(req: Request) {
     }
 
     await Promise.all(sends)
-
-    addToCalendar({ refCode, name, address, tier, price, date, time, note }).catch(() => {})
 
     return Response.json({ ok: true })
   } catch (err) {
