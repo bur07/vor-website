@@ -16,11 +16,9 @@ export async function POST(req: Request) {
     const d = await req.json()
     const { refCode, name, email, phone, address, tier, price, paymentType, amountPaid, balanceDue, date, time, note } = d
 
-    if (!refCode || !name || !email) {
-      return Response.json({ error: 'Missing required fields' }, { status: 400 })
+    if (!refCode || !name || (!email && !phone)) {
+      return Response.json({ error: 'Missing required fields — need at least email or phone' }, { status: 400 })
     }
-
-    const resend = new Resend(process.env.RESEND_API_KEY)
 
     const clientHtml = `<div style="background:#f5f0e8;font-family:Georgia,serif;max-width:600px;margin:0 auto;color:#1a1a1a">
       <div style="background:#1B3A5C;padding:30px 40px">
@@ -76,24 +74,42 @@ export async function POST(req: Request) {
       </div>
     </div>`
 
-    await Promise.all([
-      resend.emails.send({
-        from: FROM, to: email, replyTo: BUSINESS_EMAIL,
-        subject: `[${refCode}] Your VØR booking is confirmed`,
-        html: clientHtml,
-      }),
-      resend.emails.send({
-        from: FROM, to: BUSINESS_EMAIL, replyTo: email,
-        subject: `[${refCode}] Booking confirmed (manual) — ${name}`,
-        html: bizHtml,
-      }),
-    ])
+    const sends: Promise<unknown>[] = []
+
+    if (email) {
+      const resend = new Resend(process.env.RESEND_API_KEY)
+      sends.push(
+        resend.emails.send({
+          from: FROM, to: email, replyTo: BUSINESS_EMAIL,
+          subject: `[${refCode}] Your VØR booking is confirmed`,
+          html: clientHtml,
+        }),
+        resend.emails.send({
+          from: FROM, to: BUSINESS_EMAIL, replyTo: email,
+          subject: `[${refCode}] Booking confirmed (manual) — ${name}`,
+          html: bizHtml,
+        }),
+      )
+    } else {
+      // No client email — still notify the business without a replyTo
+      const resend = new Resend(process.env.RESEND_API_KEY)
+      sends.push(
+        resend.emails.send({
+          from: FROM, to: BUSINESS_EMAIL,
+          subject: `[${refCode}] Booking confirmed (manual) — ${name}`,
+          html: bizHtml,
+        }),
+      )
+    }
 
     if (phone) {
-      try {
-        await sendBookingConfirmedSms({ name, phone, refCode, tier, date, time, amountPaid: String(amountPaid), balanceDue: String(balanceDue) })
-      } catch {}
+      sends.push(
+        sendBookingConfirmedSms({ name, phone, refCode, tier, date, time, amountPaid: String(amountPaid), balanceDue: String(balanceDue) })
+          .catch(() => {})
+      )
     }
+
+    await Promise.all(sends)
 
     return Response.json({ ok: true })
   } catch (err) {
