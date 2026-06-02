@@ -1,5 +1,6 @@
 import { Resend } from 'resend'
 import { sendBookingConfirmedSms } from '@/lib/twilio'
+import { addToCalendar } from '@/lib/googleCalendar'
 
 const FROM = 'VØR Window Co. <info@vorwindowco.com>'
 const BUSINESS_EMAIL = 'info@vorwindowco.com'
@@ -66,6 +67,7 @@ export async function POST(req: Request) {
         <tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296">Email</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30">${email}</td></tr>
         ${address ? `<tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296">Address</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30">${address}</td></tr>` : ''}
         <tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296">Tier</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30">${tier}</td></tr>
+        <tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296">Price</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30"><strong>$${price} AUD</strong></td></tr>
         <tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296">Date</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30">${date} · ${time}</td></tr>
         <tr><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#6A8296">Payment</td><td style="padding:8px 0;border-bottom:1px solid rgba(42,95,165,0.08);font-size:13px;color:#0E1E30">${paymentType} — $${amountPaid} AUD paid</td></tr>
       </table>
@@ -110,6 +112,8 @@ export async function POST(req: Request) {
     }
 
     await Promise.all(sends)
+
+    addToCalendar({ refCode, name, address, tier, price, date, time, note }).catch(() => {})
 
     return Response.json({ ok: true })
   } catch (err) {

@@ -2,6 +2,7 @@ import Stripe from 'stripe'
 import { Resend } from 'resend'
 import { sendBookingConfirmedSms } from '@/lib/twilio'
 import { getAssignment, saveAssignment } from '@/lib/edgeStore'
+import { addToCalendar } from '@/lib/googleCalendar'
 
 const FROM = 'VØR Window Co. <info@vorwindowco.com>'
 const BUSINESS_EMAIL = 'info@vorwindowco.com'
@@ -146,6 +147,10 @@ export async function POST(req: Request) {
       } catch (err) {
         console.error('Webhook assignment update error:', err)
       }
+      addToCalendar({
+        refCode: m.refCode, name: m.name, address: m.address ?? '',
+        tier: m.tier, price: m.price, date: m.date, time: m.time, note: m.note,
+      }).catch(() => {})
     }
   }
 

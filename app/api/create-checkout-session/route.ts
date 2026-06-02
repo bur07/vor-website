@@ -45,6 +45,7 @@ export async function POST(req: Request) {
         name:        d.name,
         email:       d.email,
         phone:       d.phone,
+        address:     d.address ?? '',
         date:        d.date,
         time:        d.time,
       },
