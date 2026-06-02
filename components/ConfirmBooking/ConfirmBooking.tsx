@@ -17,7 +17,12 @@ interface Assignment {
 type Step = 'lookup' | 'form' | 'sent'
 type PayType = 'Full Payment' | '20% Deposit' | 'Cash' | 'Bank Transfer'
 
-const TIMES = ['Morning (8am–12pm)', 'Afternoon (12pm–5pm)', 'Flexible']
+const TIMES = Array.from({ length: 12 }, (_, i) => {
+  const h = i + 7
+  const suffix = h < 12 ? 'am' : 'pm'
+  const display = h <= 12 ? h : h - 12
+  return `${display}:00${suffix}`
+})
 const PAY_TYPES: PayType[] = ['Full Payment', '20% Deposit', 'Cash', 'Bank Transfer']
 
 export default function ConfirmBooking() {

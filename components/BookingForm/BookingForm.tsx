@@ -25,15 +25,7 @@ type Status = 'idle' | 'loading' | 'error'
 
 const EMPTY_CLIENT: ClientData = { name: '', email: '', phone: '', date: '', time: '' }
 
-function Radio({ label, value, current, onSelect }: { label: string; value: string; current: string; onSelect: (v: string) => void }) {
-  return (
-    <button type="button"
-      className={`${styles.radio} ${current === value ? styles.radioOn : ''}`}
-      onClick={() => onSelect(value)}>
-      {label}
-    </button>
-  )
-}
+
 
 export default function BookingForm() {
   const searchParams = useSearchParams()
@@ -263,11 +255,19 @@ export default function BookingForm() {
               </div>
               <div className={styles.field}>
                 <label>Preferred Time <span className={styles.req}>*</span></label>
-                <div className={styles.radioGroup}>
-                  {['Morning (8am–12pm)', 'Afternoon (12pm–5pm)', 'Flexible'].map(v => (
-                    <Radio key={v} label={v} value={v} current={client.time} onSelect={v => { setClient(c => ({ ...c, time: v })); setErrors(e => ({ ...e, time: undefined })) }} />
-                  ))}
-                </div>
+                <select
+                  value={client.time}
+                  onChange={e => { setClient(c => ({ ...c, time: e.target.value })); setErrors(er => ({ ...er, time: undefined })) }}
+                  className={errors.time ? styles.inputErr : ''}
+                >
+                  <option value="">Select a time…</option>
+                  {Array.from({ length: 12 }, (_, i) => {
+                    const h = i + 7
+                    const suffix = h < 12 ? 'am' : 'pm'
+                    const display = h <= 12 ? h : h - 12
+                    return `${display}:00${suffix}`
+                  }).map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
                 {errors.time && <span className={styles.err}>{errors.time}</span>}
               </div>
             </div>
