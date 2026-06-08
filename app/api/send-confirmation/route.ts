@@ -1,6 +1,7 @@
 import { Resend } from 'resend'
 import { sendBookingConfirmedSms } from '@/lib/twilio'
 import { buildIcs } from '@/lib/googleCalendar'
+import { getAssignment, saveAssignment } from '@/lib/edgeStore'
 
 const FROM = 'VØR Window Co. <info@vorwindowco.com>'
 const BUSINESS_EMAIL = 'info@vorwindowco.com'
@@ -117,6 +118,11 @@ export async function POST(req: Request) {
     }
 
     await Promise.all(sends)
+
+    // Save appointment date/time back to the assignment so the calendar can read it
+    getAssignment(refCode).then(existing => {
+      if (existing) saveAssignment({ ...existing, appointmentDate: date, appointmentTime: time }).catch(() => {})
+    }).catch(() => {})
 
     return Response.json({ ok: true })
   } catch (err) {

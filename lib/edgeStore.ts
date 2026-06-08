@@ -105,6 +105,8 @@ export interface QuoteAssignment {
   paidAt?: string
   amountPaid?: number
   paymentType?: string
+  appointmentDate?: string
+  appointmentTime?: string
 }
 
 export async function saveAssignment(a: QuoteAssignment) {

@@ -151,6 +151,8 @@ export async function POST(req: Request) {
             paidAt: new Date().toISOString(),
             amountPaid: parseFloat(m.amountPaid),
             paymentType: m.paymentType,
+            appointmentDate: m.date,
+            appointmentTime: m.time,
           })
         }
       } catch (err) {
