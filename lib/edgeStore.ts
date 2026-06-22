@@ -1,42 +1,28 @@
-// Thin wrapper around Vercel Edge Config for storing quote requests.
-// Reads via the public Edge Config endpoint; writes via the Vercel management API.
-
-const EC_ID    = process.env.EDGE_CONFIG_ID!
-const EC_TOKEN = (() => {
-  const raw = process.env.EDGE_CONFIG ?? ''
-  const m = raw.match(/token=([^&]+)/)
-  return m ? m[1] : ''
-})()
-const API_TOKEN = process.env.VERCEL_API_TOKEN!
-const TEAM_ID   = process.env.VERCEL_TEAM_ID!
-
-const READ_BASE  = `https://edge-config.vercel.com/${EC_ID}`
-const WRITE_URL  = `https://api.vercel.com/v1/edge-config/${EC_ID}/items?teamId=${TEAM_ID}`
-
-// ── helpers ────────────────────────────────────────────────
+const BASE  = (process.env.UPSTASH_REDIS_REST_URL  ?? process.env.KV_REST_API_URL)!
+const TOKEN = (process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN)!
+const headers = () => ({ Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' })
 
 async function ecGet<T>(key: string): Promise<T | null> {
   try {
-    const r = await fetch(`${READ_BASE}/item/${encodeURIComponent(key)}?token=${EC_TOKEN}`)
-    if (r.status === 404) return null
+    const r = await fetch(`${BASE}/get/${encodeURIComponent(key)}`, { headers: headers(), cache: 'no-store' })
     const j = await r.json()
-    return j as T
+    if (j.result === null || j.result === undefined) return null
+    return JSON.parse(j.result) as T
   } catch { return null }
 }
 
-// Single atomic PATCH — index update + item upsert/delete in one request
 async function ecPatch(items: { operation: 'upsert' | 'delete'; key: string; value?: unknown }[]) {
-  const res = await fetch(WRITE_URL, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${API_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ items }),
+  const commands = items.map(item =>
+    item.operation === 'upsert'
+      ? ['SET', item.key, JSON.stringify(item.value)]
+      : ['DEL', item.key]
+  )
+  const res = await fetch(`${BASE}/pipeline`, {
+    method: 'POST', headers: headers(), body: JSON.stringify(commands),
   })
   if (!res.ok) {
     const text = await res.text().catch(() => res.status.toString())
-    throw new Error(`Edge Config write failed (${res.status}): ${text}`)
+    throw new Error(`Redis write failed (${res.status}): ${text}`)
   }
 }
 
@@ -66,8 +52,8 @@ export async function saveRequest(req: QuoteRequest) {
   const index = (await ecGet<string[]>('_index')) ?? []
   const newIndex = index.includes(req.refCode) ? index : [...index, req.refCode]
   await ecPatch([
-    { operation: 'upsert', key: '_index',              value: newIndex },
-    { operation: 'upsert', key: `req_${req.refCode}`,  value: req },
+    { operation: 'upsert', key: '_index',             value: newIndex },
+    { operation: 'upsert', key: `req_${req.refCode}`, value: req },
   ])
 }
 
@@ -107,14 +93,26 @@ export interface QuoteAssignment {
   paymentType?: string
   appointmentDate?: string
   appointmentTime?: string
+  jobStartedAt?: string
+  jobFinishedAt?: string
+  jobDurationMins?: number
+  jobStartLat?: number
+  jobStartLng?: number
+  jobFinishLat?: number
+  jobFinishLng?: number
+  smsSentAt?: string
+  cancelledAt?: string
+  stripePayUrl?: string
+  clientSignedAt?: string
+  clientSignature?: string
 }
 
 export async function saveAssignment(a: QuoteAssignment) {
   const index = (await ecGet<string[]>('_assign_index')) ?? []
   const newIndex = index.includes(a.refCode) ? index : [...index, a.refCode]
   await ecPatch([
-    { operation: 'upsert', key: '_assign_index',        value: newIndex },
-    { operation: 'upsert', key: `assign_${a.refCode}`,  value: a },
+    { operation: 'upsert', key: '_assign_index',       value: newIndex },
+    { operation: 'upsert', key: `assign_${a.refCode}`, value: a },
   ])
 }
 
