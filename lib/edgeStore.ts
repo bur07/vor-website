@@ -105,6 +105,7 @@ export interface QuoteAssignment {
   stripePayUrl?: string
   clientSignedAt?: string
   clientSignature?: string
+  reminderSentAt?: string
 }
 
 export async function saveAssignment(a: QuoteAssignment) {
