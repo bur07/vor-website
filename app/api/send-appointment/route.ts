@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { sendAppointmentSms } from '@/lib/twilio'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM   = 'VØR Window Co. <info@vorwindowco.com>'
@@ -71,6 +72,10 @@ export async function POST(req: Request) {
       subject: `Appointment confirmed — ${prettyDate}`,
       html,
     })
+
+    if (phone) {
+      await sendAppointmentSms({ name, phone, tier, date: prettyDate, time: time ?? '', refCode }).catch(() => {})
+    }
 
     return Response.json({ ok: true })
   } catch (err) {

@@ -91,6 +91,29 @@ export async function sendQuoteRequestSms(data: {
   await sendSms(data.phone, body)
 }
 
+// ── Appointment booked confirmation ────────────────────────
+
+export async function sendAppointmentSms(data: {
+  name: string
+  phone: string
+  tier: string
+  date: string
+  time: string
+  refCode: string
+}): Promise<void> {
+  const firstName = data.name.split(' ')[0]
+  const body = [
+    `Hi ${firstName}, your VØR window clean is booked!`,
+    ``,
+    `Service: ${data.tier}`,
+    `When: ${data.date}${data.time ? ` · ${data.time}` : ''}`,
+    `Ref: ${data.refCode}`,
+    ``,
+    `Questions? Call or text Noah: 0416 572 468`,
+  ].join('\n')
+  await sendSms(data.phone, body)
+}
+
 // ── 24-hour appointment reminder ───────────────────────────
 
 export async function sendReminderSms(data: {

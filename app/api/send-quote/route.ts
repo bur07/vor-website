@@ -104,12 +104,12 @@ function buildHTML(d: QuoteData): string {
   </td></tr></table>` : ''}
   <table width="100%" cellpadding="0" cellspacing="0"><tr><td style="padding:32px 44px 0;">
     <div style="border-top:1px solid #ede7d9;padding-top:28px;text-align:center;">
-      <a href="https://vor-admin.vercel.app/sign/${esc(d.quoteRef)}"
+      <a href="https://vorwindowco.com/sign/${esc(d.quoteRef)}"
          style="display:inline-block;background:#1B3A5C;color:#f5f0e8;font-size:13px;font-family:-apple-system,sans-serif;font-weight:600;letter-spacing:.08em;text-decoration:none;padding:14px 36px;border-radius:6px;">
         Accept &amp; Sign Quote →
       </a>
       <div style="margin-top:12px;font-size:11px;color:#b0a898;font-family:-apple-system,sans-serif;">
-        Or copy this link: https://vor-admin.vercel.app/sign/${esc(d.quoteRef)}
+        Or copy this link: https://vorwindowco.com/sign/${esc(d.quoteRef)}
       </div>
     </div>
   </td></tr></table>

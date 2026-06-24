@@ -106,6 +106,7 @@ export interface QuoteAssignment {
   clientSignedAt?: string
   clientSignature?: string
   reminderSentAt?: string
+  followUpSentAt?: string
 }
 
 export async function saveAssignment(a: QuoteAssignment) {

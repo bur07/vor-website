@@ -1,0 +1,319 @@
+.page {
+  min-height: 100vh;
+  background: #f0ece4;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ───────────────────────────────────────────── */
+.header {
+  background: #1B3A5C;
+  padding: 24px 32px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  color: #f5f0e8;
+}
+
+.dot { color: #c9a84c; }
+
+.logoSub {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.45);
+  font-family: -apple-system, sans-serif;
+}
+
+/* ── Gold bar ─────────────────────────────────────────── */
+.header::after {
+  content: '';
+  display: block;
+  height: 3px;
+  background: #c9a84c;
+  position: absolute;
+  left: 0; right: 0;
+  top: 72px;
+}
+.page { position: relative; }
+
+/* ── Container ────────────────────────────────────────── */
+.container {
+  max-width: 560px;
+  width: 100%;
+  margin: 40px auto;
+  background: #fff;
+  padding: 36px 32px 28px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+  flex: 1;
+}
+
+/* ── Quote summary ────────────────────────────────────── */
+.summary {
+  border-left: 3px solid #c9a84c;
+  padding-left: 16px;
+  margin-bottom: 20px;
+}
+
+.summaryRef {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #c9a84c;
+  font-family: -apple-system, sans-serif;
+  margin-bottom: 4px;
+}
+
+.summaryName {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1B3A5C;
+}
+
+.summaryService {
+  font-size: 14px;
+  color: #5a5a5a;
+  margin-top: 3px;
+}
+
+.summaryPrice {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1B3A5C;
+  margin-top: 8px;
+  letter-spacing: 0.02em;
+}
+
+.divider {
+  height: 1px;
+  background: #ede7d9;
+  margin: 20px 0;
+}
+
+/* ── Instruction ──────────────────────────────────────── */
+.instruction {
+  font-size: 14px;
+  color: #5a5a5a;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+/* ── Mode toggle ──────────────────────────────────────── */
+.modeToggle {
+  display: flex;
+  border: 1px solid #e0d8cc;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.modeBtn {
+  padding: 8px 20px;
+  font-size: 13px;
+  font-family: -apple-system, sans-serif;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #8a7a5a;
+  letter-spacing: 0.04em;
+}
+
+.modeBtnActive {
+  background: #1B3A5C;
+  color: #f5f0e8;
+}
+
+/* ── Canvas ───────────────────────────────────────────── */
+.canvasWrap {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.canvas {
+  width: 100%;
+  height: 160px;
+  border: 1.5px solid #d0c8b8;
+  border-radius: 6px;
+  background: #faf8f4;
+  touch-action: none;
+  display: block;
+  cursor: crosshair;
+}
+
+.canvasHint {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c0b8a8;
+  font-family: -apple-system, sans-serif;
+  pointer-events: none;
+}
+
+.clearBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 11px;
+  font-family: -apple-system, sans-serif;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid #d0c8b8;
+  border-radius: 5px;
+  padding: 3px 10px;
+  cursor: pointer;
+  color: #8a7a5a;
+}
+
+/* ── Type mode ────────────────────────────────────────── */
+.typeWrap { margin-bottom: 8px; }
+
+.typeInput {
+  width: 100%;
+  border: 1.5px solid #d0c8b8;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-family: -apple-system, sans-serif;
+  background: #faf8f4;
+  color: #1a1a1a;
+  box-sizing: border-box;
+}
+.typeInput:focus { outline: none; border-color: #c9a84c; }
+.typeInput::placeholder { color: #c0b8a8; }
+
+.typedPreview {
+  margin-top: 12px;
+  padding: 16px 20px;
+  border: 1.5px solid #d0c8b8;
+  border-radius: 6px;
+  background: #faf8f4;
+  font-size: 28px;
+  font-family: 'Brush Script MT', 'Apple Chancery', cursive, Georgia, serif;
+  color: #1B3A5C;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Actions ──────────────────────────────────────────── */
+.acceptBtn {
+  width: 100%;
+  padding: 16px;
+  background: #1B3A5C;
+  border: none;
+  border-radius: 8px;
+  color: #f5f0e8;
+  font-size: 15px;
+  font-family: -apple-system, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.acceptBtn:disabled { opacity: 0.4; cursor: default; }
+.acceptBtn:not(:disabled):active { background: #0e2540; }
+
+.errMsg {
+  font-size: 13px;
+  color: #c93535;
+  text-align: center;
+  margin-top: 12px;
+  font-family: -apple-system, sans-serif;
+}
+
+.legal {
+  font-size: 11px;
+  color: #b0a898;
+  text-align: center;
+  margin-top: 14px;
+  line-height: 1.5;
+  font-family: -apple-system, sans-serif;
+}
+
+/* ── State screens ────────────────────────────────────── */
+.center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 32px;
+  text-align: center;
+}
+
+.stateIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(180,160,140,0.15);
+  border: 2px solid #d0c8b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #8a7a5a;
+  margin-bottom: 20px;
+}
+
+.green {
+  background: rgba(34,197,94,0.1);
+  border-color: rgba(34,197,94,0.3);
+  color: #16a34a;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 2.5px solid #e0d8cc;
+  border-top-color: #c9a84c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.stateTitle {
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: #1B3A5C;
+  margin: 0 0 8px;
+}
+
+.stateSub {
+  font-size: 14px;
+  color: #8a7a5a;
+  max-width: 320px;
+  line-height: 1.6;
+  margin: 0;
+  font-family: -apple-system, sans-serif;
+}
+
+.contact {
+  font-size: 13px;
+  color: #8a7a5a;
+  margin-top: 24px;
+  font-family: -apple-system, sans-serif;
+}
+.contact a { color: #c9a84c; text-decoration: none; }
+
+/* ── Footer ───────────────────────────────────────────── */
+.footer {
+  background: #1B3A5C;
+  padding: 16px 32px;
+  font-size: 11px;
+  color: rgba(245,240,232,0.35);
+  letter-spacing: 0.1em;
+  text-align: center;
+  font-family: -apple-system, sans-serif;
+}

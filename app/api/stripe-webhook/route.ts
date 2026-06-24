@@ -129,30 +129,57 @@ export async function POST(req: Request) {
     const session = event.data.object as Stripe.Checkout.Session
     if (session.payment_status === 'paid' && session.metadata) {
       const m = session.metadata as Record<string, string>
-      try {
-        await sendBookingEmails(m, session.payment_intent as string)
-      } catch (err) {
-        console.error('Webhook email error:', err)
+      const refCode = m.refCode
+      if (!refCode) return new Response('ok')
+
+      // Amount paid from Stripe is always authoritative (cents → dollars)
+      const amountPaidFromStripe = session.amount_total ? session.amount_total / 100 : undefined
+
+      // Look up assignment to fill any missing metadata
+      let existing = null
+      try { existing = await getAssignment(refCode) } catch {}
+
+      // Merge Stripe session data with what we already know from Edge Config
+      const name        = m.name        || existing?.clientName        || ''
+      const email       = m.email       || existing?.clientEmail       || ''
+      const phone       = m.phone       || existing?.clientPhone       || ''
+      const tier        = m.tier        || existing?.tier              || ''
+      const date        = m.date        || existing?.appointmentDate   || ''
+      const time        = m.time        || existing?.appointmentTime   || ''
+      const address     = m.address     || existing?.clientAddress     || ''
+      const price       = m.price       || String(existing?.price ?? 0)
+      const amountPaid  = String(amountPaidFromStripe ?? m.amountPaid ?? existing?.price ?? 0)
+      const balanceDue  = m.balanceDue  ?? '0'
+      const paymentType = m.paymentType || 'Stripe'
+      const note        = m.note        || ''
+
+      const merged = { ...m, name, email, phone, tier, date, time, address, price, amountPaid, balanceDue, paymentType, note }
+
+      if (email) {
+        try {
+          await sendBookingEmails(merged, session.payment_intent as string)
+        } catch (err) {
+          console.error('Webhook email error:', err)
+        }
       }
-      try {
-        await sendBookingConfirmedSms({
-          name: m.name, phone: m.phone, refCode: m.refCode,
-          tier: m.tier, date: m.date, time: m.time,
-          amountPaid: m.amountPaid, balanceDue: m.balanceDue,
-        })
-      } catch (err) {
-        console.error('Webhook SMS error:', err)
+
+      if (phone) {
+        try {
+          await sendBookingConfirmedSms({ name, phone, refCode, tier, date, time, amountPaid, balanceDue })
+        } catch (err) {
+          console.error('Webhook SMS error:', err)
+        }
       }
+
       try {
-        const existing = await getAssignment(m.refCode)
         if (existing) {
           await saveAssignment({
             ...existing,
-            paidAt: new Date().toISOString(),
-            amountPaid: parseFloat(m.amountPaid),
-            paymentType: m.paymentType,
-            appointmentDate: m.date,
-            appointmentTime: m.time,
+            paidAt:      new Date().toISOString(),
+            amountPaid:  Number(amountPaid),
+            paymentType: paymentType,
+            ...(date ? { appointmentDate: date } : {}),
+            ...(time ? { appointmentTime: time } : {}),
           })
         }
       } catch (err) {
