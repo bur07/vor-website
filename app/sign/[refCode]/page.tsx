@@ -10,13 +10,14 @@ interface Quote {
   note: string
   clientName?: string
   clientSignedAt?: string
+  quoteValidUntil?: string
 }
 
 export default function SignPage({ params }: { params: Promise<{ refCode: string }> }) {
   const { refCode } = use(params)
 
   const [quote,   setQuote]   = useState<Quote | null>(null)
-  const [status,  setStatus]  = useState<'loading' | 'ready' | 'not-found' | 'already-signed' | 'done'>('loading')
+  const [status,  setStatus]  = useState<'loading' | 'ready' | 'not-found' | 'already-signed' | 'expired' | 'done'>('loading')
   const [mode,    setMode]    = useState<'draw' | 'type'>('draw')
   const [typed,   setTyped]   = useState('')
   const [drawn,   setDrawn]   = useState(false)
@@ -33,6 +34,7 @@ export default function SignPage({ params }: { params: Promise<{ refCode: string
       .then(d => {
         if (d.error) { setStatus('not-found'); return }
         if (d.clientSignedAt) { setQuote(d); setStatus('already-signed'); return }
+        if (d.quoteValidUntil && new Date(d.quoteValidUntil) < new Date()) { setQuote(d); setStatus('expired'); return }
         setQuote(d)
         setStatus('ready')
       })
@@ -139,6 +141,20 @@ export default function SignPage({ params }: { params: Promise<{ refCode: string
         <p className={styles.stateTitle}>Already signed</p>
         <p className={styles.stateSub}>
           This quote was accepted on {new Date(quote!.clientSignedAt!).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}.
+        </p>
+      </div>
+    </div>
+  )
+
+  if (status === 'expired') return (
+    <div className={styles.page}>
+      <Header />
+      <div className={styles.center}>
+        <div className={`${styles.stateIcon} ${styles.red}`}>✕</div>
+        <p className={styles.stateTitle}>Quote expired</p>
+        <p className={styles.stateSub}>
+          This quote expired on {quote?.quoteValidUntil ? new Date(quote.quoteValidUntil).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' }) : 'a previous date'}.
+          Please contact VØR Window Co. for a fresh quote.
         </p>
       </div>
     </div>

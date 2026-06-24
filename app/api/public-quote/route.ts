@@ -16,5 +16,6 @@ export async function GET(req: Request) {
     clientName:      a.clientName,
     clientSignedAt:  a.clientSignedAt,
     clientSignature: a.clientSignature,
+    quoteValidUntil: a.quoteValidUntil,
   })
 }
