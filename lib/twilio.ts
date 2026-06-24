@@ -136,6 +136,44 @@ export async function sendReminderSms(data: {
   await sendSms(data.phone, body)
 }
 
+// ── Review request (after payment) ────────────────────────
+
+export async function sendReviewRequestSms(data: {
+  name: string
+  phone: string
+  reviewLink: string
+}): Promise<void> {
+  const firstName = data.name.split(' ')[0]
+  const body = [
+    `Hi ${firstName}, thank you for choosing VØR Window Co.!`,
+    ``,
+    `We'd really appreciate a Google review — it only takes 30 seconds and means the world to a small business:`,
+    data.reviewLink,
+    ``,
+    `Thank you — Noah 🪟`,
+  ].join('\n')
+  await sendSms(data.phone, body)
+}
+
+// ── Rebook reminder ────────────────────────────────────────
+
+export async function sendReBookSms(data: {
+  name: string
+  phone: string
+  tier: string
+  months: number
+}): Promise<void> {
+  const firstName = data.name.split(' ')[0]
+  const body = [
+    `Hi ${firstName}, it's Noah from VØR Window Co.`,
+    ``,
+    `It's been ${data.months} month${data.months > 1 ? 's' : ''} since your last ${data.tier} window clean — time for a refresh?`,
+    ``,
+    `Reply to this message or call 0416 572 468 to rebook.`,
+  ].join('\n')
+  await sendSms(data.phone, body)
+}
+
 // ── Booking confirmed (post-payment) ───────────────────────
 
 export async function sendBookingConfirmedSms(data: {

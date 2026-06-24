@@ -1,6 +1,6 @@
 import { Resend } from 'resend'
 import { listAssignments, saveAssignment } from '@/lib/edgeStore'
-import { sendReminderSms } from '@/lib/twilio'
+import { sendReminderSms, sendReBookSms } from '@/lib/twilio'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM   = 'VØR Window Co. <info@vorwindowco.com>'
@@ -172,5 +172,65 @@ export async function GET(req: Request) {
     followUpResults.push({ refCode: a.refCode, email: sent })
   }
 
-  return Response.json({ ok: true, tomorrow, sent: results.length, results, followUps: followUpResults.length, followUpResults })
+  // ── Rebook reminders ──────────────────────────────────────
+  const reBookResults: { refCode: string; sms: boolean; email: boolean }[] = []
+
+  const reBookDue = all.filter(a => {
+    if (!a.reBookIn || !a.paidAt || a.reBookReminderSentAt) return false
+    const monthsElapsed = (Date.now() - new Date(a.paidAt).getTime()) / (1000 * 60 * 60 * 24 * 30)
+    return monthsElapsed >= a.reBookIn
+  })
+
+  for (const a of reBookDue) {
+    let sms = false, email = false
+    const name = a.clientName ?? 'there'
+
+    if (a.clientPhone) {
+      try {
+        await sendReBookSms({ name, phone: a.clientPhone, tier: a.tier, months: a.reBookIn! })
+        sms = true
+      } catch { /* keep going */ }
+    }
+
+    if (a.clientEmail) {
+      try {
+        await resend.emails.send({
+          from:    FROM,
+          to:      a.clientEmail,
+          subject: `Time for your next window clean — VØR`,
+          html: `<div style="background:#f5f0e8;font-family:Georgia,serif;max-width:600px;margin:0 auto;color:#1a1a1a">
+  <div style="background:#1B3A5C;padding:30px 40px">
+    <h1 style="font-size:22px;font-weight:300;letter-spacing:0.25em;color:#f5f0e8;margin:0">VØR<span style="color:#c9a84c">.</span></h1>
+    <p style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(245,240,232,0.55);margin:5px 0 0">Window Co.</p>
+  </div>
+  <div style="height:3px;background:#c9a84c"></div>
+  <div style="padding:36px 40px">
+    <p style="font-size:15px;line-height:1.8;color:#2c2c2c;margin:0 0 8px">Hi ${name},</p>
+    <p style="font-size:14px;line-height:1.9;color:#5a4a2a;margin:0 0 24px">
+      It's been ${a.reBookIn} month${a.reBookIn! > 1 ? 's' : ''} since your last <strong>${a.tier}</strong> window clean — time to bring that sparkle back?
+    </p>
+    <p style="font-size:14px;line-height:1.9;color:#5a4a2a;margin:0 0 28px">
+      Reply to this email or give us a call and we'll get you booked in.
+    </p>
+    <p style="font-size:13px;color:#8a7a5a;margin:0">
+      <a href="tel:+61416572468" style="color:#c9a84c;text-decoration:none">0416 572 468</a> ·
+      <a href="mailto:info@vorwindowco.com" style="color:#c9a84c;text-decoration:none">info@vorwindowco.com</a>
+    </p>
+  </div>
+  <div style="background:#1B3A5C;padding:18px 40px;font-size:11px;color:rgba(245,240,232,0.45);letter-spacing:0.1em">
+    VØR Window Co. · Sydney &amp; ACT · vorwindowco.com
+  </div>
+</div>`,
+        })
+        email = true
+      } catch { /* keep going */ }
+    }
+
+    if (sms || email) {
+      await saveAssignment({ ...a, reBookReminderSentAt: new Date().toISOString() })
+    }
+    reBookResults.push({ refCode: a.refCode, sms, email })
+  }
+
+  return Response.json({ ok: true, tomorrow, sent: results.length, results, followUps: followUpResults.length, followUpResults, reBooks: reBookResults.length, reBookResults })
 }

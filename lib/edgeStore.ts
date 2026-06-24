@@ -109,6 +109,10 @@ export interface QuoteAssignment {
   followUpSentAt?: string
   accessNote?: string
   quoteValidUntil?: string
+  jobPhotos?: string[]
+  reviewRequestSentAt?: string
+  reBookIn?: number
+  reBookReminderSentAt?: string
 }
 
 export async function saveAssignment(a: QuoteAssignment) {
