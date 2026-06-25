@@ -38,6 +38,7 @@ export async function POST(req: Request) {
         await resend.emails.send({
           from:    FROM,
           to:      a.clientEmail,
+          bcc:     'info@vorwindowco.com',
           subject: `Thank you for choosing VØR — ${a.refCode}`,
           html: `<div style="background:#f5f0e8;font-family:Georgia,serif;max-width:600px;margin:0 auto;color:#1a1a1a">
   <div style="background:#1B3A5C;padding:30px 40px">
@@ -84,6 +85,7 @@ export async function POST(req: Request) {
       await resend.emails.send({
         from:    FROM,
         to:      a.clientEmail!,
+        bcc:     'info@vorwindowco.com',
         subject: `Your VØR quote is waiting — ${a.refCode}`,
         html: `<div style="background:#f5f0e8;font-family:Georgia,serif;max-width:600px;margin:0 auto;color:#1a1a1a">
   <div style="background:#1B3A5C;padding:30px 40px">

@@ -133,6 +133,7 @@ export async function POST(req: Request) {
       await resend.emails.send({
         from:    FROM,
         to:      assignment.clientEmail,
+        bcc:     'info@vorwindowco.com',
         subject: `Service complete — ${assignment.refCode}`,
         html:    completionEmail({
           name:       assignment.clientName ?? 'there',

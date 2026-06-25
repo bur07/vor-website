@@ -113,6 +113,7 @@ export interface QuoteAssignment {
   reviewRequestSentAt?: string
   reBookIn?: number
   reBookReminderSentAt?: string
+  commsSkippedAt?: string
 }
 
 export async function saveAssignment(a: QuoteAssignment) {

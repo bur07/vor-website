@@ -65,6 +65,7 @@ export async function POST(req: Request) {
         await resend.emails.send({
           from:    FROM,
           to:      email,
+          bcc:     'info@vorwindowco.com',
           subject: `Thank you for choosing VØR — ${refCode}`,
           html:    reviewEmail({ name, refCode, tier, reviewLink }),
         })

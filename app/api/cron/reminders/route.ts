@@ -106,6 +106,7 @@ export async function GET(req: Request) {
         await resend.emails.send({
           from:    FROM,
           to:      a.clientEmail,
+          bcc:     'info@vorwindowco.com',
           subject: `Reminder — your window clean is tomorrow`,
           html:    reminderEmail({ name, refCode: a.refCode, tier: a.tier, date: a.appointmentDate!, time, address: addr }),
         })
@@ -139,6 +140,7 @@ export async function GET(req: Request) {
       await resend.emails.send({
         from:    FROM,
         to:      a.clientEmail,
+        bcc:     'info@vorwindowco.com',
         subject: `Your VØR quote is waiting — ${a.refCode}`,
         html: `<div style="background:#f5f0e8;font-family:Georgia,serif;max-width:600px;margin:0 auto;color:#1a1a1a">
   <div style="background:#1B3A5C;padding:30px 40px">
@@ -197,6 +199,7 @@ export async function GET(req: Request) {
         await resend.emails.send({
           from:    FROM,
           to:      a.clientEmail,
+          bcc:     'info@vorwindowco.com',
           subject: `Time for your next window clean — VØR`,
           html: `<div style="background:#f5f0e8;font-family:Georgia,serif;max-width:600px;margin:0 auto;color:#1a1a1a">
   <div style="background:#1B3A5C;padding:30px 40px">
