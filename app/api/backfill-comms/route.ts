@@ -23,6 +23,7 @@ export async function POST(req: Request) {
     a.paidAt &&
     !a.reviewRequestSentAt &&
     !a.cancelledAt &&
+    !a.commsSkippedAt &&
     (a.clientEmail || a.clientPhone)
   )
 
@@ -74,6 +75,7 @@ export async function POST(req: Request) {
     !a.paidAt &&
     !a.cancelledAt &&
     !a.followUpSentAt &&
+    !a.commsSkippedAt &&
     a.clientEmail &&
     Date.now() - new Date(a.assignedAt).getTime() >= THREE_DAYS
   )
