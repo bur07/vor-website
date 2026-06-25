@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 import { Resend } from 'resend'
-import { sendBookingConfirmedSms } from '@/lib/twilio'
+import { sendBookingConfirmedSms, sendReviewRequestSms } from '@/lib/twilio'
 import { getAssignment, saveAssignment } from '@/lib/edgeStore'
 import { buildIcs } from '@/lib/googleCalendar'
 
@@ -181,6 +181,34 @@ export async function POST(req: Request) {
             ...(date ? { appointmentDate: date } : {}),
             ...(time ? { appointmentTime: time } : {}),
           })
+
+          // Fire review request if not already sent
+          if (!existing.reviewRequestSentAt && (email || phone)) {
+            const resendInst = new Resend(process.env.RESEND_API_KEY)
+            const reviewLink = process.env.GOOGLE_REVIEW_LINK ?? 'https://g.page/r/vorwindowco/review'
+            if (phone) sendReviewRequestSms({ name, phone, reviewLink }).catch(() => {})
+            if (email) {
+              resendInst.emails.send({
+                from: FROM, to: email,
+                subject: `Thank you for choosing VØR — ${refCode}`,
+                html: `<div style="background:#f5f0e8;font-family:Georgia,serif;max-width:600px;margin:0 auto">
+  <div style="background:#1B3A5C;padding:30px 40px"><h1 style="font-size:22px;font-weight:300;letter-spacing:0.25em;color:#f5f0e8;margin:0">VØR<span style="color:#c9a84c">.</span></h1></div>
+  <div style="height:3px;background:#c9a84c"></div>
+  <div style="padding:36px 40px">
+    <p style="font-size:15px;color:#2c2c2c;margin:0 0 8px">Hi ${name},</p>
+    <p style="font-size:14px;line-height:1.9;color:#5a4a2a;margin:0 0 24px">Thank you for choosing VØR for your ${tier} window clean. We hope you're delighted with the results.</p>
+    <p style="font-size:14px;line-height:1.9;color:#5a4a2a;margin:0 0 28px">If you have a moment, we'd love a Google review — it takes less than a minute.</p>
+    <div style="text-align:center;margin:0 0 28px">
+      <a href="${reviewLink}" style="display:inline-block;background:#c9a84c;color:#1B3A5C;font-size:14px;font-weight:700;letter-spacing:.08em;text-decoration:none;padding:14px 36px;border-radius:6px;">Leave a Review ★</a>
+    </div>
+    <p style="font-size:12px;color:#8a7a5a">Noah · VØR Window Co.</p>
+  </div>
+  <div style="background:#1B3A5C;padding:18px 40px;font-size:11px;color:rgba(245,240,232,0.45)">VØR Window Co. · Sydney &amp; ACT · vorwindowco.com</div>
+</div>`,
+              }).catch(() => {})
+            }
+            saveAssignment({ ...existing, paidAt: new Date().toISOString(), reviewRequestSentAt: new Date().toISOString() }).catch(() => {})
+          }
         }
       } catch (err) {
         console.error('Webhook assignment update error:', err)
